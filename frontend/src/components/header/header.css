@@ -1,0 +1,167 @@
+/* ===== HEADER ===== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #6a1b9a;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.logo:hover {
+  color: #8a4baf;
+}
+
+/* ===== NAVIGATION LINKS ===== */
+.link {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.link a {
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 8px 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Underline animation on hover */
+.link a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #6a1b9a, #8a4baf);
+  transition: width 0.3s ease;
+}
+
+.link a:hover {
+  color: #6a1b9a;
+}
+
+.link a:hover::after {
+  width: 100%;
+}
+
+/* ===== ACTIVE LINK STYLING ===== */
+.link a.active {
+  color: #6a1b9a;
+  font-weight: 600;
+}
+
+.link a.active::after {
+  width: 100%;
+}
+
+/* ===== ACCOUNT / LOGIN BUTTON ===== */
+.link a:last-child {
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+/* Account link (when logged in) */
+.link a:last-child[href="/account"] {
+  background: #f8f6ff;
+  color: #6a1b9a;
+  border: 2px solid #6a1b9a;
+}
+
+.link a:last-child[href="/account"]:hover {
+  background: #6a1b9a;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(106, 27, 154, 0.3);
+}
+
+/* Login link (when logged out) */
+.link a:last-child[href="/login"] {
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  color: #ffffff;
+  border: none;
+}
+
+.link a:last-child[href="/login"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(106, 27, 154, 0.35);
+}
+
+/* Remove underline animation for Account/Login button */
+.link a:last-child::after {
+  display: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  header {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .link {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .link a {
+    font-size: 14px;
+  }
+
+  .link a:last-child {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .logo {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .link {
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .link a {
+    font-size: 13px;
+  }
+
+  .link a:last-child {
+    padding: 5px 14px;
+    font-size: 12px;
+  }
+}
