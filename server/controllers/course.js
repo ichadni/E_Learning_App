@@ -1,4 +1,3 @@
-
 import TryCatch from "../middlewares/TryCatch.js";
 import { Courses } from "../models/Courses.js";
 import { Lecture } from "../models/Lecture.js";
@@ -16,49 +15,53 @@ export const getAllCourses = TryCatch(async (req, res) => {
 
 export const getSingleCourse = TryCatch(async (req, res) => {
   const course = await Courses.findById(req.params.id);
-
   res.json({
     course,
   });
 });
 
+// ✅ FIXED: Allow Admin AND Superadmin
 export const fetchLectures = TryCatch(async (req, res) => {
   const lectures = await Lecture.find({ course: req.params.id });
 
   const user = await User.findById(req.user._id);
 
-  if (user.role === "admin") {
+  // ✅ Allow Admin AND Superadmin
+  if (user.role === "admin" || user.role === "superadmin") {
     return res.json({ lectures });
   }
 
-  if (!user.subscription.includes(req.params.id))
+  if (!user.subscription.includes(req.params.id)) {
     return res.status(400).json({
       message: "You have not subscribed to this course",
     });
+  }
 
   res.json({ lectures });
 });
 
+// ✅ FIXED: Allow Admin AND Superadmin
 export const fetchLecture = TryCatch(async (req, res) => {
   const lecture = await Lecture.findById(req.params.id);
 
   const user = await User.findById(req.user._id);
 
-  if (user.role === "admin") {
+  // ✅ Allow Admin AND Superadmin
+  if (user.role === "admin" || user.role === "superadmin") {
     return res.json({ lecture });
   }
 
-  if (!user.subscription.includes(lecture.course))
+  if (!user.subscription.includes(lecture.course)) {
     return res.status(400).json({
       message: "You have not subscribed to this course",
     });
+  }
 
   res.json({ lecture });
 });
 
 export const getMyCourses = TryCatch(async (req, res) => {
   const courses = await Courses.find({ _id: req.user.subscription });
-
   res.json({
     courses,
   });
@@ -66,7 +69,6 @@ export const getMyCourses = TryCatch(async (req, res) => {
 
 export const checkout = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
-
   const course = await Courses.findById(req.params.id);
 
   if (user.subscription.includes(course._id)) {
@@ -89,8 +91,7 @@ export const checkout = TryCatch(async (req, res) => {
 });
 
 export const paymentVerification = TryCatch(async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -109,7 +110,6 @@ export const paymentVerification = TryCatch(async (req, res) => {
     });
 
     const user = await User.findById(req.user._id);
-
     const course = await Courses.findById(req.params.id);
 
     user.subscription.push(course._id);
@@ -147,7 +147,6 @@ export const addProgress = TryCatch(async (req, res) => {
   }
 
   progress.completedLectures.push(lectureId);
-
   await progress.save();
 
   res.status(201).json({
@@ -164,9 +163,7 @@ export const getYourProgress = TryCatch(async (req, res) => {
   if (!progress) return res.status(404).json({ message: "null" });
 
   const allLectures = (await Lecture.find({ course: req.query.course })).length;
-
   const completedLectures = progress[0].completedLectures.length;
-
   const courseProgressPercentage = (completedLectures * 100) / allLectures;
 
   res.json({
@@ -174,5 +171,38 @@ export const getYourProgress = TryCatch(async (req, res) => {
     completedLectures,
     allLectures,
     progress,
+  });
+});
+
+// ✅ Update Course (Admin/Superadmin)
+export const updateCourse = TryCatch(async (req, res) => {
+  const course = await Courses.findById(req.params.id);
+  
+  if (!course) {
+    return res.status(404).json({
+      message: "Course not found",
+    });
+  }
+
+  const { title, description, category, createdBy, duration, price } = req.body;
+
+  // Update fields
+  if (title) course.title = title;
+  if (description) course.description = description;
+  if (category) course.category = category;
+  if (createdBy) course.createdBy = createdBy;
+  if (duration) course.duration = duration;
+  if (price) course.price = price;
+
+  // Update image if provided
+  if (req.file) {
+    course.image = req.file.path;
+  }
+
+  await course.save();
+
+  res.status(200).json({
+    message: "Course updated successfully",
+    course,
   });
 });

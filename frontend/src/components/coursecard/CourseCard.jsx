@@ -10,78 +10,101 @@ import { CourseData } from "../../context/CourseContext";
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
   const { user, isAuth } = UserData();
-
   const { fetchCourses } = CourseData();
 
-  const deleteHandler = async (id) => {
-    if (confirm("Are you sure you want to delete this course")) {
-      try {
-        const { data } = await axios.delete(`${server}/api/course/${id}`, {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
-        });
+  // Check if user is enrolled
+  const isEnrolled = user?.subscription?.includes(course._id);
 
-        toast.success(data.message);
-        fetchCourses();
-      } catch (error) {
-        toast.error(error.response.data.message);
-      }
-    }
-  };
   return (
     <div className="course-card">
-      <img src={`${server}/${course.image}`} alt="" className="course-image" />
-      <h3>{course.title}</h3>
-      <p>Instructor- {course.createdBy}</p>
-      <p>Duration- {course.duration} weeks</p>
-      <p>Price- ₹{course.price}</p>
-      {isAuth ? (
-        <>
-          {user && user.role !== "admin" ? (
+      {/* Image */}
+      <img 
+        src={course.image ? `${server}/${course.image}` : "https://via.placeholder.com/300x200/6a1b9a/ffffff?text=Course"} 
+        alt={course.title} 
+        className="course-image" 
+      />
+
+      {/* Badge (Optional) */}
+      {course.isPopular && <span className="course-badge popular">🔥 Popular</span>}
+      {course.isNew && <span className="course-badge new">✨ New</span>}
+      {course.isFeatured && <span className="course-badge featured">⭐ Featured</span>}
+
+      {/* Content */}
+      <div className="course-content">
+        <h3 className="course-title">{course.title}</h3>
+
+        <div className="course-meta">
+          <div className="meta-item">
+            <span className="icon">👨‍🏫</span>
+            <span className="label">Instructor:</span>
+            <span className="value">{course.createdBy || "Unknown"}</span>
+          </div>
+          <div className="meta-item">
+            <span className="icon">⏱️</span>
+            <span className="label">Duration:</span>
+            <span className="value">{course.duration || 0} weeks</span>
+          </div>
+          <div className="meta-item">
+            <span className="icon">📚</span>
+            <span className="label">Category:</span>
+            <span className="value">{course.category || "General"}</span>
+          </div>
+        </div>
+
+        {/* Price */}
+        <div className="course-price">
+          <span className="current">₹{course.price}</span>
+          {course.originalPrice && (
+            <span className="original">₹{course.originalPrice}</span>
+          )}
+          {course.discount && (
+            <span className="discount">{course.discount}% OFF</span>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="btn-group">
+          {isAuth ? (
             <>
-              {user.subscription.includes(course._id) ? (
+              {/* ✅ Admin & Superadmin - Show "Review" button → Goes to Course Study */}
+              {user && (user.role === "admin" || user.role === "superadmin") ? (
                 <button
                   onClick={() => navigate(`/course/study/${course._id}`)}
-                  className="common-btn"
+                  className="common-btn review"
                 >
-                  Study
+                  📝 Review
                 </button>
               ) : (
-                <button
-                  onClick={() => navigate(`/course/${course._id}`)}
-                  className="common-btn"
-                >
-                  Get Started
-                </button>
+                <>
+                  {/* ✅ Student - Show "Study" if enrolled, else "Get Started" */}
+                  {isEnrolled ? (
+                    <button
+                      onClick={() => navigate(`/course/study/${course._id}`)}
+                      className="common-btn study"
+                    >
+                      📖 Study
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/course/${course._id}`)}
+                      className="common-btn primary"
+                    >
+                      🚀 Get Started
+                    </button>
+                  )}
+                </>
               )}
             </>
           ) : (
             <button
-              onClick={() => navigate(`/course/study/${course._id}`)}
-              className="common-btn"
+              onClick={() => navigate("/login")}
+              className="common-btn primary"
             >
-              Study
+              🚀 Get Started
             </button>
           )}
-        </>
-      ) : (
-        <button onClick={() => navigate("/login")} className="common-btn">
-          Get Started
-        </button>
-      )}
-
-      <br />
-
-      {user && user.role === "admin" && (
-        <button
-          onClick={() => deleteHandler(course._id)}
-          className="common-btn"
-          style={{ background: "red" }}
-        >
-          Delete
-        </button>
-      )}
+        </div>
+      </div>
     </div>
   );
 };

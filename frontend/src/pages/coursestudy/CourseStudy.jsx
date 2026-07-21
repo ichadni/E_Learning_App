@@ -3,34 +3,83 @@ import "./coursestudy.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CourseData } from "../../context/CourseContext";
 import { server } from "../../main";
+import { FaUser, FaClock, FaBookOpen, FaArrowRight } from "react-icons/fa";
 
 const CourseStudy = ({ user }) => {
   const params = useParams();
-
   const { fetchCourse, course } = CourseData();
   const navigate = useNavigate();
 
-  if (user && user.role !== "admin" && !user.subscription.includes(params.id))
-    return navigate("/");
-
+  // ✅ Allow Admin & Superadmin to access ANY course
   useEffect(() => {
+    // If user is admin or superadmin, allow access
+    if (user && (user.role === "admin" || user.role === "superadmin")) {
+      fetchCourse(params.id);
+      return;
+    }
+
+    // For regular users, check if enrolled
+    if (user && !user.subscription?.includes(params.id)) {
+      navigate("/");
+      return;
+    }
+
     fetchCourse(params.id);
-  }, []);
+  }, [params.id, user]);
+
+  if (!course) {
+    return (
+      <div className="course-study-page">
+        <div className="image-placeholder">📚</div>
+        <h2>Loading Course...</h2>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {course && (
-        <div className="course-study-page">
-          <img src={`${server}/${course.image}`} alt="" width={350} />
-          <h2>{course.title}</h2>
-          <h4>{course.description}</h4>
-          <h5>by - {course.createdBy}</h5>
-          <h5>Duration - {course.duration} weeks</h5>
-          <Link to={`/lectures/${course._id}`}>
-            <h2>Lectures</h2>
-          </Link>
-        </div>
+    <div className="course-study-page">
+      {/* Course Image */}
+      {course.image ? (
+        <img
+          src={`${server}/${course.image}`}
+          alt={course.title}
+          className="course-image"
+        />
+      ) : (
+        <div className="image-placeholder">📚</div>
       )}
-    </>
+
+      {/* Title */}
+      <h2>{course.title}</h2>
+
+      {/* Description */}
+      <p className="description">{course.description}</p>
+
+      {/* Meta Info */}
+      <div className="course-meta">
+        <div className="meta-item">
+          <span className="icon">👨‍🏫</span>
+          <span>Instructor: <strong>{course.createdBy}</strong></span>
+        </div>
+        <div className="meta-item">
+          <span className="icon">⏱️</span>
+          <span>Duration: <strong>{course.duration} weeks</strong></span>
+        </div>
+        <div className="meta-item">
+          <span className="icon">📚</span>
+          <span>Category: <strong>{course.category || "General"}</strong></span>
+        </div>
+        <div className="meta-item">
+          <span className="icon">💰</span>
+          <span>Price: <strong>₹{course.price}</strong></span>
+        </div>
+      </div>
+
+      {/* Lectures Link */}
+      <Link to={`/lectures/${course._id}`} className="lectures-link">
+        <FaBookOpen /> View Lectures <FaArrowRight className="arrow" />
+      </Link>
+    </div>
   );
 };
 

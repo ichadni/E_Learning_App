@@ -9,7 +9,8 @@ const AdminDashbord = ({ user }) => {
   const navigate = useNavigate();
 
   if (user && user.role !== "admin" && user.role !== "superadmin") return navigate("/");
-  const [stats, setStats] = useState([]);
+  const [stats, setStats] = useState({ totalCourses: 0, totalLectures: 0, totalUsers: 0 });
+  const [loading, setLoading] = useState(true);
 
   async function fetchStats() {
     try {
@@ -19,34 +20,55 @@ const AdminDashbord = ({ user }) => {
         },
       });
 
-      setStats(data.stats);
+      setStats(data.stats || { totalCourses: 0, totalLectures: 0, totalUsers: 0 });
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     fetchStats();
   }, []);
-  return (
-    <div>
+
+  if (loading) {
+    return (
       <Layout>
-        <div className="main-content">
-          <div className="box">
-            <p>Total Courses</p>
-            <p>{stats.totalCoures}</p>
-          </div>
-          <div className="box">
-            <p>Total Lectures</p>
-            <p>{stats.totalLectures}</p>
-          </div>
-          <div className="box">
-            <p>Total Users</p>
-            <p>{stats.totalUsers}</p>
-          </div>
+        <div className="main-content loading">
+          <div className="spinner"></div>
+          <p>Loading stats...</p>
         </div>
       </Layout>
-    </div>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="main-content">
+        <div className="box">
+          <span className="icon">📚</span>
+          <div className="box-content">
+            <p>Total Courses</p>
+            <p>{stats.totalCourses || 0}</p>
+          </div>
+        </div>
+        <div className="box">
+          <span className="icon">🎥</span>
+          <div className="box-content">
+            <p>Total Lectures</p>
+            <p>{stats.totalLectures || 0}</p>
+          </div>
+        </div>
+        <div className="box">
+          <span className="icon">👥</span>
+          <div className="box-content">
+            <p>Total Users</p>
+            <p>{stats.totalUsers || 0}</p>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 

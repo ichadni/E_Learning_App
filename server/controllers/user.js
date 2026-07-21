@@ -20,6 +20,8 @@ export const register = TryCatch(async (req, res) => {
     name,
     email,
     password: hashPassword,
+    role: "user",        
+    mainrole: "user",
   };
 
   const otp = Math.floor(Math.random() * 1000000);
@@ -67,6 +69,8 @@ export const verifyUser = TryCatch(async (req, res) => {
     name: verify.user.name,
     email: verify.user.email,
     password: verify.user.password,
+    role: verify.user.role || "user",        
+    mainrole: verify.user.mainrole || "user",
   });
 
   res.json({
@@ -163,4 +167,58 @@ export const resetPassword = TryCatch(async (req, res) => {
   await user.save();
 
   res.json({ message: "Password Reset" });
+});
+
+// ============================================
+// ✅ NEW FUNCTIONS FOR ADMIN ROLE MANAGEMENT
+// ============================================
+
+// GET ALL USERS (Admin/Superadmin only)
+export const getAllUser = TryCatch(async (req, res) => {
+  const users = await User.find({ _id: { $ne: req.user._id } }).select(
+    "-password"
+  );
+
+  res.json({ users });
+});
+
+// UPDATE USER ROLE (Superadmin only)
+export const updateRole = TryCatch(async (req, res) => {
+  if (req.user.mainrole !== "superadmin")
+    return res.status(403).json({
+      message: "This endpoint is assign to superadmin",
+    });
+  
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  // Toggle role: user -> admin, admin -> user
+  if (user.role === "user") {
+    user.role = "admin";
+    user.mainrole = "admin";
+    await user.save();
+
+    return res.status(200).json({
+      message: "Role updated to admin",
+    });
+  }
+
+  if (user.role === "admin") {
+    user.role = "user";
+    user.mainrole = "user";
+    await user.save();
+
+    return res.status(200).json({
+      message: "Role updated to user",
+    });
+  }
+
+  res.status(400).json({
+    message: "Invalid role",
+  });
 });

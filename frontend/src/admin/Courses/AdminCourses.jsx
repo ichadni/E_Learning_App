@@ -19,7 +19,8 @@ const categories = [
 const AdminCourses = ({ user }) => {
   const navigate = useNavigate();
 
-  if (user && user.role !== "admin") return navigate("/");
+  // ✅ Allow both admin AND superadmin
+  if (user && user.role !== "admin" && user.role !== "superadmin") return navigate("/");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -30,6 +31,8 @@ const AdminCourses = ({ user }) => {
   const [image, setImage] = useState("");
   const [imagePrev, setImagePrev] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
+
+  const { courses, fetchCourses } = CourseData();
 
   const changeImageHandler = (e) => {
     const file = e.target.files[0];
@@ -43,7 +46,28 @@ const AdminCourses = ({ user }) => {
     };
   };
 
-  const { courses, fetchCourses } = CourseData();
+  // ✅ Edit Course Function
+  const editCourse = (courseId) => {
+    navigate(`/admin/course/edit/${courseId}`);
+  };
+
+  // ✅ Delete Course Function
+  const deleteHandler = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this course?")) return;
+
+    try {
+      const { data } = await axios.delete(`${server}/api/course/${id}`, {
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+      });
+
+      toast.success(data.message);
+      await fetchCourses();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete course");
+    }
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -78,7 +102,8 @@ const AdminCourses = ({ user }) => {
       setPrice("");
       setCategory("");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to add course");
+      setBtnLoading(false);
     }
   };
 
@@ -89,9 +114,26 @@ const AdminCourses = ({ user }) => {
           <h1>All Courses</h1>
           <div className="dashboard-content">
             {courses && courses.length > 0 ? (
-              courses.map((e) => {
-                return <CourseCard key={e._id} course={e} />;
-              })
+              courses.map((e) => (
+                <div key={e._id} className="course-item">
+                  <CourseCard course={e} />
+                  {/* ✅ Edit & Delete Buttons */}
+                  <div className="course-actions">
+                    <button 
+                      onClick={() => editCourse(e._id)} 
+                      className="edit-btn"
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button 
+                      onClick={() => deleteHandler(e._id)} 
+                      className="delete-btn"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                </div>
+              ))
             ) : (
               <p>No Courses Yet</p>
             )}

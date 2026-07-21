@@ -21,8 +21,18 @@ const Lecture = ({ user }) => {
   const [videoPrev, setVideoPrev] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
 
-  if (user && user.role !== "admin" && !user.subscription.includes(params.id))
-    return navigate("/");
+  // ✅ FIXED: navigate() inside useEffect
+  useEffect(() => {
+    // If user is admin or superadmin, allow access
+    if (user && (user.role === "admin" || user.role === "superadmin")) {
+      return;
+    }
+    // For regular users, check if enrolled
+    if (user && !user.subscription.includes(params.id)) {
+      navigate("/");
+      return;
+    }
+  }, [user, params.id, navigate]);
 
   async function fetchLectures() {
     try {
@@ -96,7 +106,7 @@ const Lecture = ({ user }) => {
       setvideo("");
       setVideoPrev("");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to add lecture");
       setBtnLoading(false);
     }
   };
@@ -113,7 +123,7 @@ const Lecture = ({ user }) => {
         toast.success(data.message);
         fetchLectures();
       } catch (error) {
-        toast.error(error.response.data.message);
+        toast.error(error.response?.data?.message || "Failed to delete lecture");
       }
     }
   };
@@ -167,6 +177,7 @@ const Lecture = ({ user }) => {
     fetchLectures();
     fetchProgress();
   }, []);
+
   return (
     <>
       {loading ? (
@@ -205,7 +216,7 @@ const Lecture = ({ user }) => {
               )}
             </div>
             <div className="right">
-              {user && user.role === "admin" && (
+              {user && (user.role === "admin" || user.role === "superadmin") && (
                 <button className="common-btn" onClick={() => setShow(!show)}>
                   {show ? "Close" : "Add Lecture +"}
                 </button>
@@ -260,10 +271,9 @@ const Lecture = ({ user }) => {
 
               {lectures && lectures.length > 0 ? (
                 lectures.map((e, i) => (
-                  <>
+                  <div key={e._id}>
                     <div
                       onClick={() => fetchLecture(e._id)}
-                      key={i}
                       className={`lecture-number ${
                         lecture._id === e._id && "active"
                       }`}
@@ -283,7 +293,7 @@ const Lecture = ({ user }) => {
                           </span>
                         )}
                     </div>
-                    {user && user.role === "admin" && (
+                    {user && (user.role === "admin" || user.role === "superadmin") && (
                       <button
                         className="common-btn"
                         style={{ background: "red" }}
@@ -292,7 +302,7 @@ const Lecture = ({ user }) => {
                         Delete {e.title}
                       </button>
                     )}
-                  </>
+                  </div>
                 ))
               ) : (
                 <p>No Lectures Yet!</p>

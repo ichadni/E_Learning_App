@@ -7,8 +7,10 @@ import {
   getMyCourses,
   checkout,
   paymentVerification,
+  updateCourse,
 } from "../controllers/course.js";
-import { isAuth } from "../middlewares/isAuth.js";
+import { isAuth, isAdmin } from "../middlewares/isAuth.js";  
+import { uploadFiles } from "../middlewares/multer.js";
 
 const router = express.Router();
 
@@ -19,5 +21,7 @@ router.get("/lecture/:id", isAuth, fetchLecture);
 router.get("/mycourse", isAuth, getMyCourses);
 router.post("/course/checkout/:id", isAuth, checkout);
 router.post("/verification/:id", isAuth, paymentVerification);
+
+router.put("/course/:id", isAuth, isAdmin, uploadFiles, updateCourse); 
 
 export default router;

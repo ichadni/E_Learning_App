@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";  // ✅ ADD React
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { server } from "../main";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,6 +11,7 @@ export const UserContextProvider = ({ children }) => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Login User
   async function loginUser(email, password, navigate, fetchMyCourse) {
     setBtnLoading(true);
     try {
@@ -29,6 +30,24 @@ export const UserContextProvider = ({ children }) => {
       if (fetchMyCourse) {
         await fetchMyCourse();
       }
+
+      // ✅ Create welcome notification for user
+      try {
+        await axios.post(
+          `${server}/api/notifications/create`,
+          {
+            title: "Welcome Back!",
+            message: `Welcome back ${data.user.name}!`,
+            type: "success",
+          },
+          {
+            headers: { token: data.token },
+          }
+        );
+      } catch (notifError) {
+        console.log("Notification error:", notifError);
+      }
+
     } catch (error) {
       setBtnLoading(false);
       setIsAuth(false);
@@ -36,6 +55,7 @@ export const UserContextProvider = ({ children }) => {
     }
   }
 
+  // ✅ Register User
   async function registerUser(name, email, password, navigate) {
     setBtnLoading(true);
     try {
@@ -55,6 +75,7 @@ export const UserContextProvider = ({ children }) => {
     }
   }
 
+  // ✅ Verify OTP
   async function verifyOtp(otp, navigate) {
     setBtnLoading(true);
     const activationToken = localStorage.getItem("activationToken");
@@ -74,6 +95,7 @@ export const UserContextProvider = ({ children }) => {
     }
   }
 
+  // ✅ Fetch User
   async function fetchUser() {
     try {
       const token = localStorage.getItem("token");

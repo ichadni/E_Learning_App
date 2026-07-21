@@ -2,7 +2,7 @@ import React from "react";
 import "./common.css";
 import { Link } from "react-router-dom";
 import { AiFillHome, AiOutlineLogout } from "react-icons/ai";
-import { FaBook, FaUserAlt } from "react-icons/fa";
+import { FaBook, FaUserAlt, FaMoneyBillWave } from "react-icons/fa";
 import { UserData } from "../../context/UserContext";
 
 const Sidebar = () => {
@@ -27,6 +27,18 @@ const Sidebar = () => {
             <span>Courses</span>
           </Link>
         </li>
+
+        {/* ✅ ADD PAYMENTS MENU - Shows for admin & superadmin */}
+        {user && (user.mainrole === "superadmin" || user.role === "admin") && (
+          <li>
+            <Link to={"/admin/payments"}>
+              <div className="icon">
+                <FaMoneyBillWave />
+              </div>
+              <span>Payments</span>
+            </Link>
+          </li>
+        )}
 
         {user && user.mainrole === "superadmin" && (
           <li>

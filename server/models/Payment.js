@@ -1,23 +1,53 @@
 import mongoose from "mongoose";
 
-const schema = new mongoose.Schema({
-  razorpay_order_id: {
-    type: String,
-    required: true,
+const paymentSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Courses",
+      required: true,
+    },
+    method: {
+      type: String,
+      enum: ["bkash_manual", "bkash_auto", "razorpay"],
+      required: true,
+    },
+    transactionId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    currency: {
+      type: String,
+      default: "BDT",
+    },
+    status: {
+      type: String,
+      enum: ["pending", "completed", "failed", "cancelled"],
+      default: "pending",
+    },
+    bkash: {
+      senderNumber: String,
+      paymentID: String,
+      trxID: String,
+    },
+    paymentDate: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  razorpay_payment_id: {
-    type: String,
-    required: true,
-  },
-  razorpay_signature: {
-    type: String,
-    required: true,
-  },
+  {
+    timestamps: true,
+  }
+);
 
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-export const Payment = mongoose.model("Payment", schema);
+export const Payment = mongoose.model("Payment", paymentSchema);

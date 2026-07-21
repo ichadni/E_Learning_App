@@ -22,6 +22,9 @@ import AdminCourses from "./admin/Courses/AdminCourses";
 import AdminUsers from "./admin/Users/AdminUsers";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import PaymentPending from "./pages/paymentpending/PaymentPending";
+import Payments from "./admin/Payments/Payments";
+import EditCourse from "./admin/Courses/EditCourse";
 
 const App = () => {
   // ✅ ALL HOOKS at the top - consistent order
@@ -60,6 +63,10 @@ const App = () => {
         <Route path="/admin/dashboard" element={isAuth ? <AdminDashbord user={user} /> : <Login />} />
         <Route path="/admin/course" element={isAuth ? <AdminCourses user={user} /> : <Login />} />
         <Route path="/admin/users" element={isAuth ? <AdminUsers user={user} /> : <Login />} />
+        <Route path="/payment-pending/:id" element={isAuth ? <PaymentPending user={user} /> : <Login />} />
+        <Route path="/admin/payments" element={isAuth ? <Payments user={user} /> : <Login />} />
+        <Route path="/admin/course/edit/:id" element={isAuth ? <EditCourse user={user} /> : <Login />}
+/>
       </Routes>
       <Footer />
     </BrowserRouter>
