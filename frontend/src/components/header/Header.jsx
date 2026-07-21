@@ -38,7 +38,7 @@ const Header = ({ isAuth }) => {
               <div className="user-avatar">
                 {user.name?.charAt(0).toUpperCase() || "U"}
               </div>
-              <span className="user-name">Account</span>  {/* ✅ Changed to "Account" */}
+              <span className="user-name">Account</span>
             </Link>
             <button onClick={logoutHandler} className="logout-btn" title="Logout">
               <FaSignOutAlt />

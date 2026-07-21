@@ -93,6 +93,45 @@ const AdminCourses = ({ user }) => {
       toast.success(data.message);
       setBtnLoading(false);
       await fetchCourses();
+      
+      // ✅ ADD NOTIFICATIONS
+      try {
+        const token = localStorage.getItem("token");
+        
+        // Notify all users about new course
+        await axios.post(
+          `${server}/api/notifications/create`,
+          {
+            title: "📚 New Course Available!",
+            message: `New course "${title}" has been added. Enroll now!`,
+            type: "info",
+            link: "/courses",
+          },
+          {
+            headers: { token },
+          }
+        );
+        
+        // Notify superadmin
+        await axios.post(
+          `${server}/api/notifications/create`,
+          {
+            title: "📚 Course Added",
+            message: `New course "${title}" added to the platform by ${user.name}`,
+            type: "info",
+            link: "/admin/dashboard",
+          },
+          {
+            headers: { token },
+          }
+        );
+        
+        console.log("✅ Notifications sent for new course");
+      } catch (notifError) {
+        console.log("❌ Notification error:", notifError);
+      }
+
+      // Reset form fields
       setImage("");
       setTitle("");
       setDescription("");
@@ -101,6 +140,7 @@ const AdminCourses = ({ user }) => {
       setCreatedBy("");
       setPrice("");
       setCategory("");
+      
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to add course");
       setBtnLoading(false);

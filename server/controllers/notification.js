@@ -36,17 +36,48 @@ export const markAsRead = TryCatch(async (req, res) => {
   res.json({ message: "Notification marked as read" });
 });
 
-// ✅ Mark All as Read
+// ✅ Mark All as Read (FIXED)
 export const markAllAsRead = TryCatch(async (req, res) => {
-  await Notification.updateMany(
-    { user: req.user._id, isRead: false },
-    { isRead: true }
-  );
-
-  res.json({ message: "All notifications marked as read" });
+  try {
+    console.log("📌 Mark all as read - User:", req.user._id);
+    
+    const unreadCount = await Notification.countDocuments({
+      user: req.user._id,
+      isRead: false,
+    });
+    
+    console.log("📌 Unread count:", unreadCount);
+    
+    if (unreadCount === 0) {
+      return res.json({
+        success: true,
+        message: "No unread notifications",
+        modifiedCount: 0,
+      });
+    }
+    
+    const result = await Notification.updateMany(
+      { user: req.user._id, isRead: false },
+      { $set: { isRead: true } }
+    );
+    
+    console.log("✅ Updated:", result.modifiedCount);
+    
+    res.json({
+      success: true,
+      message: `Marked ${result.modifiedCount} notifications as read`,
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (error) {
+    console.error("❌ Mark all as read error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
 
-// ✅ CREATE NOTIFICATION - Route Handler (FIXED)
+// ✅ CREATE NOTIFICATION - Route Handler
 export const createNotification = TryCatch(async (req, res) => {
   const { title, message, type, link } = req.body;
 
@@ -65,4 +96,27 @@ export const createNotification = TryCatch(async (req, res) => {
     message: "Notification created",
     notification,
   });
+});
+
+// ✅ Clear all notifications for current user
+export const clearAllMyNotifications = TryCatch(async (req, res) => {
+  try {
+    console.log("📌 Clear all notifications - User:", req.user._id);
+    
+    const result = await Notification.deleteMany({ user: req.user._id });
+    
+    console.log("✅ Deleted:", result.deletedCount);
+    
+    res.json({
+      success: true,
+      message: `Deleted ${result.deletedCount} notifications`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("❌ Clear all error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 });

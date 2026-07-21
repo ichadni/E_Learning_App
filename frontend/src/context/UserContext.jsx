@@ -31,22 +31,7 @@ export const UserContextProvider = ({ children }) => {
         await fetchMyCourse();
       }
 
-      // ✅ Create welcome notification for user
-      try {
-        await axios.post(
-          `${server}/api/notifications/create`,
-          {
-            title: "Welcome Back!",
-            message: `Welcome back ${data.user.name}!`,
-            type: "success",
-          },
-          {
-            headers: { token: data.token },
-          }
-        );
-      } catch (notifError) {
-        console.log("Notification error:", notifError);
-      }
+      // ❌ NO WELCOME NOTIFICATION
 
     } catch (error) {
       setBtnLoading(false);

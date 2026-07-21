@@ -28,6 +28,54 @@ const CourseDescription = ({ user }) => {
     fetchCourse(params.id);
   }, [params.id]);
 
+  // ✅ MOVE isEnrolled HERE - Before the useEffect that uses it
+  const isEnrolled = user?.subscription?.includes(course?._id);
+
+  // ✅ Handle enrollment notification - AFTER isEnrolled is declared
+  useEffect(() => {
+    const sendEnrollmentNotification = async () => {
+      if (isEnrolled && user && course) {
+        try {
+          const token = localStorage.getItem("token");
+          
+          // Notify admin about enrollment
+          await axios.post(
+            `${server}/api/notifications/create`,
+            {
+              title: "📚 New Enrollment!",
+              message: `${user.name} has enrolled in "${course.title}"`,
+              type: "info",
+              link: "/admin/dashboard",
+            },
+            {
+              headers: { token },
+            }
+          );
+          
+          // Notify user about enrollment
+          await axios.post(
+            `${server}/api/notifications/create`,
+            {
+              title: "📚 Course Enrolled!",
+              message: `You have successfully enrolled in "${course.title}"`,
+              type: "success",
+              link: `/course/study/${course._id}`,
+            },
+            {
+              headers: { token },
+            }
+          );
+          
+          console.log("✅ Enrollment notifications sent");
+        } catch (notifError) {
+          console.log("❌ Notification error:", notifError);
+        }
+      }
+    };
+    
+    sendEnrollmentNotification();
+  }, [isEnrolled, user, course]);
+
   // ✅ bKash Payment Handler - Submit for Verification
   const handleBkashPayment = async (e) => {
     e.preventDefault();
@@ -53,6 +101,25 @@ const CourseDescription = ({ user }) => {
       setSenderNumber("");
       setTransactionId("");
       
+      // ✅ Send notification to admin about new payment
+      try {
+        await axios.post(
+          `${server}/api/notifications/create`,
+          {
+            title: "💰 New Payment Pending!",
+            message: `${user.name} submitted payment for "${course.title}"`,
+            type: "warning",
+            link: "/admin/payments",
+          },
+          {
+            headers: { token },
+          }
+        );
+        console.log("✅ Admin notification sent for payment");
+      } catch (notifError) {
+        console.log("❌ Notification error:", notifError);
+      }
+      
       // ✅ Redirect to pending page
       navigate(`/payment-pending/${data.paymentId}`);
     } catch (error) {
@@ -76,8 +143,6 @@ const CourseDescription = ({ user }) => {
       </div>
     );
   }
-
-  const isEnrolled = user?.subscription?.includes(course._id);
 
   return (
     <div className="course-description">

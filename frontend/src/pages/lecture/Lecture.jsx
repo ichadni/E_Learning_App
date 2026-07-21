@@ -100,6 +100,27 @@ const Lecture = ({ user }) => {
       toast.success(data.message);
       setBtnLoading(false);
       setShow(false);
+      
+      // ✅ ADD NOTIFICATION - New Lecture Added
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `${server}/api/notifications/create`,
+          {
+            title: "📹 New Lecture Added!",
+            message: `New lecture "${title}" added to your course`,
+            type: "info",
+            link: `/lectures/${params.id}`,
+          },
+          {
+            headers: { token },
+          }
+        );
+        console.log("✅ Lecture added notification sent");
+      } catch (notifError) {
+        console.log("❌ Notification error:", notifError);
+      }
+      
       fetchLectures();
       setTitle("");
       setDescription("");
@@ -166,12 +187,62 @@ const Lecture = ({ user }) => {
       );
       console.log(data.message);
       fetchProgress();
+
+      // ✅ ADD NOTIFICATION - Lecture Completed
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `${server}/api/notifications/create`,
+          {
+            title: "✅ Lecture Completed!",
+            message: `You completed "${lecture.title}"`,
+            type: "success",
+            link: `/lectures/${params.id}`,
+          },
+          {
+            headers: { token },
+          }
+        );
+        console.log("✅ Lecture completed notification sent");
+      } catch (notifError) {
+        console.log("❌ Notification error:", notifError);
+      }
+
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(progress);
+  // ✅ Course Completed Notification
+  useEffect(() => {
+    const sendCourseCompletedNotification = async () => {
+      if (completedLec === lectLength && lectLength > 0 && completedLec > 0) {
+        try {
+          const token = localStorage.getItem("token");
+          
+          // Notify user
+          await axios.post(
+            `${server}/api/notifications/create`,
+            {
+              title: "🏆 Course Completed!",
+              message: `Congratulations! You completed the course!`,
+              type: "success",
+              link: `/certificate/${params.id}`,
+            },
+            {
+              headers: { token },
+            }
+          );
+          
+          console.log("✅ Course completed notification sent");
+        } catch (notifError) {
+          console.log("❌ Notification error:", notifError);
+        }
+      }
+    };
+    
+    sendCourseCompletedNotification();
+  }, [completedLec, lectLength, params.id]);
 
   useEffect(() => {
     fetchLectures();

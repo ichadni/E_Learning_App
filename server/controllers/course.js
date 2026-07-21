@@ -5,6 +5,11 @@ import { User } from "../models/User.js";
 import crypto from "crypto";
 import { Payment } from "../models/Payment.js";
 import { Progress } from "../models/Progress.js";
+import { Notification } from "../models/Notification.js";
+import { Enrollment } from "../models/Enrollment.js";
+import { promisify } from "util";
+import fs from "fs";
+import { rm } from "fs";
 
 export const getAllCourses = TryCatch(async (req, res) => {
   const courses = await Courses.find();
@@ -20,13 +25,11 @@ export const getSingleCourse = TryCatch(async (req, res) => {
   });
 });
 
-// ✅ FIXED: Allow Admin AND Superadmin
 export const fetchLectures = TryCatch(async (req, res) => {
   const lectures = await Lecture.find({ course: req.params.id });
 
   const user = await User.findById(req.user._id);
 
-  // ✅ Allow Admin AND Superadmin
   if (user.role === "admin" || user.role === "superadmin") {
     return res.json({ lectures });
   }
@@ -40,13 +43,11 @@ export const fetchLectures = TryCatch(async (req, res) => {
   res.json({ lectures });
 });
 
-// ✅ FIXED: Allow Admin AND Superadmin
 export const fetchLecture = TryCatch(async (req, res) => {
   const lecture = await Lecture.findById(req.params.id);
 
   const user = await User.findById(req.user._id);
 
-  // ✅ Allow Admin AND Superadmin
   if (user.role === "admin" || user.role === "superadmin") {
     return res.json({ lecture });
   }
@@ -132,6 +133,7 @@ export const paymentVerification = TryCatch(async (req, res) => {
   }
 });
 
+// ✅ ADD PROGRESS WITH NOTIFICATIONS
 export const addProgress = TryCatch(async (req, res) => {
   const progress = await Progress.findOne({
     user: req.user._id,
@@ -148,6 +150,59 @@ export const addProgress = TryCatch(async (req, res) => {
 
   progress.completedLectures.push(lectureId);
   await progress.save();
+
+  // ✅ Lecture Completed Notification
+  const lecture = await Lecture.findById(lectureId);
+  if (lecture) {
+    await Notification.create({
+      user: req.user._id,
+      title: "✅ Lecture Completed!",
+      message: `You completed "${lecture.title}"`,
+      type: "success",
+      link: `/lectures/${req.query.course}`,
+    });
+  }
+
+  // ✅ Check if Course Completed
+  const allLectures = await Lecture.find({ course: req.query.course });
+  const completedCount = progress.completedLectures.length;
+
+  if (completedCount === allLectures.length && allLectures.length > 0) {
+    const course = await Courses.findById(req.query.course);
+    
+    // To USER: Course Completed
+    await Notification.create({
+      user: req.user._id,
+      title: "🏆 Course Completed!",
+      message: `Congratulations! You completed "${course.title}"!`,
+      type: "success",
+      link: `/certificate/${req.query.course}`,
+    });
+
+    // To All ADMINS: Course Completed
+    const admins = await User.find({ role: "admin" });
+    for (const admin of admins) {
+      await Notification.create({
+        user: admin._id,
+        title: "🎓 Course Completed",
+        message: `${req.user.name} completed "${course.title}"`,
+        type: "info",
+        link: "/admin/dashboard",
+      });
+    }
+
+    // To All SUPERADMINS: Course Completed
+    const superadmins = await User.find({ role: "superadmin" });
+    for (const superadmin of superadmins) {
+      await Notification.create({
+        user: superadmin._id,
+        title: "🎓 Course Completed",
+        message: `${req.user.name} completed "${course.title}"`,
+        type: "info",
+        link: "/admin/dashboard",
+      });
+    }
+  }
 
   res.status(201).json({
     message: "new Progress added",
@@ -174,7 +229,166 @@ export const getYourProgress = TryCatch(async (req, res) => {
   });
 });
 
-// ✅ Update Course (Admin/Superadmin)
+// ✅ CREATE COURSE WITH NOTIFICATIONS
+export const createCourse = TryCatch(async (req, res) => {
+  const { title, description, category, createdBy, duration, price } = req.body;
+  const image = req.file;
+
+  const course = await Courses.create({
+    title,
+    description,
+    category,
+    createdBy,
+    image: image?.path,
+    duration,
+    price,
+  });
+
+  // ✅ To All USERS: New Course Available
+  const allUsers = await User.find({ role: "user" });
+  for (const user of allUsers) {
+    await Notification.create({
+      user: user._id,
+      title: "📚 New Course Available!",
+      message: `New course "${title}" has been added. Enroll now!`,
+      type: "info",
+      link: "/courses",
+    });
+  }
+
+  // ✅ To All ADMINS: Course Added
+  const admins = await User.find({ role: "admin" });
+  for (const admin of admins) {
+    await Notification.create({
+      user: admin._id,
+      title: "📚 Course Added",
+      message: `New course "${title}" added by ${req.user.name}`,
+      type: "info",
+      link: "/admin/dashboard",
+    });
+  }
+
+  // ✅ To All SUPERADMINS: Course Added
+  const superadmins = await User.find({ role: "superadmin" });
+  for (const superadmin of superadmins) {
+    await Notification.create({
+      user: superadmin._id,
+      title: "📚 Course Added",
+      message: `New course "${title}" added by ${req.user.name}`,
+      type: "info",
+      link: "/admin/dashboard",
+    });
+  }
+
+  res.status(201).json({
+    message: "Course Created Successfully",
+  });
+});
+
+// ✅ ADD LECTURES WITH NOTIFICATIONS
+export const addLectures = TryCatch(async (req, res) => {
+  const course = await Courses.findById(req.params.id);
+  if (!course)
+    return res.status(404).json({
+      message: "No Course with this id",
+    });
+
+  const { title, description } = req.body;
+  const file = req.file;
+
+  const lecture = await Lecture.create({
+    title,
+    description,
+    video: file?.path,
+    course: course._id,
+  });
+
+  // ✅ To All Enrolled Users: New Lecture Added
+  const enrolledUsers = await User.find({ subscription: course._id });
+  for (const user of enrolledUsers) {
+    await Notification.create({
+      user: user._id,
+      title: "📹 New Lecture Added!",
+      message: `New lecture "${title}" added to "${course.title}"`,
+      type: "info",
+      link: `/lectures/${course._id}`,
+    });
+  }
+
+  // ✅ To All ADMINS: Lecture Added
+  const admins = await User.find({ role: "admin" });
+  for (const admin of admins) {
+    await Notification.create({
+      user: admin._id,
+      title: "📹 Lecture Added",
+      message: `New lecture "${title}" added to "${course.title}"`,
+      type: "info",
+      link: `/admin/course`,
+    });
+  }
+
+  // ✅ To All SUPERADMINS: Lecture Added
+  const superadmins = await User.find({ role: "superadmin" });
+  for (const superadmin of superadmins) {
+    await Notification.create({
+      user: superadmin._id,
+      title: "📹 Lecture Added",
+      message: `New lecture "${title}" added to "${course.title}"`,
+      type: "info",
+      link: `/admin/course`,
+    });
+  }
+
+  res.status(201).json({
+    message: "Lecture Added",
+    lecture,
+  });
+});
+
+// ✅ DELETE LECTURE
+export const deleteLecture = TryCatch(async (req, res) => {
+  const lecture = await Lecture.findById(req.params.id);
+
+  rm(lecture.video, () => {
+    console.log("Video deleted");
+  });
+
+  await lecture.deleteOne();
+
+  res.json({ message: "Lecture Deleted" });
+});
+
+const unlinkAsync = promisify(fs.unlink);
+
+// ✅ DELETE COURSE
+export const deleteCourse = TryCatch(async (req, res) => {
+  const course = await Courses.findById(req.params.id);
+
+  const lectures = await Lecture.find({ course: course._id });
+
+  await Promise.all(
+    lectures.map(async (lecture) => {
+      await unlinkAsync(lecture.video);
+      console.log("video deleted");
+    })
+  );
+
+  rm(course.image, () => {
+    console.log("image deleted");
+  });
+
+  await Lecture.find({ course: req.params.id }).deleteMany();
+
+  await course.deleteOne();
+
+  await User.updateMany({}, { $pull: { subscription: req.params.id } });
+
+  res.json({
+    message: "Course Deleted",
+  });
+});
+
+// ✅ UPDATE COURSE
 export const updateCourse = TryCatch(async (req, res) => {
   const course = await Courses.findById(req.params.id);
   
@@ -186,7 +400,6 @@ export const updateCourse = TryCatch(async (req, res) => {
 
   const { title, description, category, createdBy, duration, price } = req.body;
 
-  // Update fields
   if (title) course.title = title;
   if (description) course.description = description;
   if (category) course.category = category;
@@ -194,7 +407,6 @@ export const updateCourse = TryCatch(async (req, res) => {
   if (duration) course.duration = duration;
   if (price) course.price = price;
 
-  // Update image if provided
   if (req.file) {
     course.image = req.file.path;
   }

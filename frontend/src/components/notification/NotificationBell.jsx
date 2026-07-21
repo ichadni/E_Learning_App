@@ -1,12 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaBell } from "react-icons/fa";
+import { FaBell, FaTrash } from "react-icons/fa";
 import { useNotification } from "../../context/NotificationContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import "./notification.css";
 
 const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
+  const { 
+    notifications, 
+    unreadCount, 
+    markAsRead, 
+    markAllAsRead, 
+    clearAllNotifications,  // ✅ ADD THIS
+    fetchNotifications 
+  } = useNotification();
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -20,12 +28,42 @@ const NotificationBell = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleNotificationClick = (notification) => {
-    markAsRead(notification._id);
+  const handleNotificationClick = async (notification) => {
+    await markAsRead(notification._id);
     if (notification.link) {
       navigate(notification.link);
     }
     setIsOpen(false);
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    setIsOpen(false);
+  };
+
+  // ✅ Clear all notifications using context
+  const handleClearAll = async () => {
+    if (!window.confirm("Delete all notifications?")) return;
+    
+    try {
+      await clearAllNotifications();
+      toast.success("All notifications cleared");
+      setIsOpen(false);
+    } catch (error) {
+      toast.error("Failed to clear notifications");
+      console.log("❌ Clear all error:", error);
+    }
+  };
+
+  const getTimeAgo = (date) => {
+    const now = new Date();
+    const diff = Math.floor((now - new Date(date)) / 1000);
+    
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+    return new Date(date).toLocaleDateString();
   };
 
   const getTypeColor = (type) => {
@@ -47,17 +85,28 @@ const NotificationBell = () => {
       {isOpen && (
         <div className="notification-dropdown">
           <div className="notification-header">
-            <h4>Notifications</h4>
-            {unreadCount > 0 && (
-              <button onClick={markAllAsRead} className="mark-all-read">
-                Mark all as read
-              </button>
-            )}
+            <h4>
+              Notifications
+              {unreadCount > 0 && <span className="unread-badge">{unreadCount} unread</span>}
+            </h4>
+            <div className="notification-actions">
+              {notifications.length > 0 && (
+                <button onClick={handleClearAll} className="clear-all-btn" title="Clear all notifications">
+                  <FaTrash /> Clear All
+                </button>
+              )}
+              {unreadCount > 0 && (
+                <button onClick={handleMarkAllAsRead} className="mark-all-read">
+                  Mark all read
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="notification-list">
             {notifications.length === 0 ? (
               <div className="empty-notifications">
+                <span className="empty-icon">🔔</span>
                 <p>No notifications</p>
               </div>
             ) : (
@@ -72,9 +121,12 @@ const NotificationBell = () => {
                     <h5>{notification.title}</h5>
                     <p>{notification.message}</p>
                     <span className="notification-time">
-                      {new Date(notification.createdAt).toLocaleDateString()}
+                      {getTimeAgo(notification.createdAt)}
                     </span>
                   </div>
+                  {!notification.isRead && (
+                    <div className="unread-dot"></div>
+                  )}
                 </div>
               ))
             )}

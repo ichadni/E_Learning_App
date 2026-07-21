@@ -53,9 +53,9 @@ const CourseCard = ({ course }) => {
 
         {/* Price */}
         <div className="course-price">
-          <span className="current">₹{course.price}</span>
+          <span className="current">৳{course.price}</span>
           {course.originalPrice && (
-            <span className="original">₹{course.originalPrice}</span>
+            <span className="original">৳{course.originalPrice}</span>
           )}
           {course.discount && (
             <span className="discount">{course.discount}% OFF</span>
@@ -72,7 +72,7 @@ const CourseCard = ({ course }) => {
                   onClick={() => navigate(`/course/study/${course._id}`)}
                   className="common-btn review"
                 >
-                  📝 Review
+                  📝 ADD Lecture
                 </button>
               ) : (
                 <>

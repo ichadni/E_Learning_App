@@ -5,6 +5,8 @@ import { rm } from "fs";
 import { promisify } from "util";
 import fs from "fs";
 import { User } from "../models/User.js";
+import { Enrollment } from "../models/Enrollment.js";
+import { Notification } from "../models/Notification.js"; // ✅ ADDED
 
 export const createCourse = TryCatch(async (req, res) => {
   const { title, description, category, createdBy, duration, price } = req.body;
@@ -92,21 +94,59 @@ export const deleteCourse = TryCatch(async (req, res) => {
   });
 });
 
-// ✅ FIXED: Corrected spelling from totalCoures to totalCourses
 export const getAllStats = TryCatch(async (req, res) => {
-  const totalCourses = (await Courses.find()).length;
-  const totalLectures = (await Lecture.find()).length;
-  const totalUsers = (await User.find()).length;
+  try {
+    const totalCourses = await Courses.countDocuments();
+    const totalLectures = await Lecture.countDocuments();
+    const totalUsers = await User.countDocuments();
+    
+    const totalEnrollments = await Enrollment.countDocuments();
 
-  const stats = {
-    totalCourses,
-    totalLectures,
-    totalUsers,
-  };
+    const topCourses = await Enrollment.aggregate([
+      { $group: { _id: "$course", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+      { $lookup: { from: "courses", localField: "_id", foreignField: "_id", as: "course" } },
+      { $unwind: "$course" },
+      { $project: { title: "$course.title", count: 1 } }
+    ]);
 
-  res.json({
-    stats,
-  });
+    const recentEnrollments = await Enrollment.aggregate([
+      { $sort: { enrolledAt: -1 } },
+      { $limit: 10 },
+      { $lookup: { from: "users", localField: "user", foreignField: "_id", as: "user" } },
+      { $unwind: "$user" },
+      { $lookup: { from: "courses", localField: "course", foreignField: "_id", as: "course" } },
+      { $unwind: "$course" },
+      { 
+        $project: { 
+          userName: "$user.name",
+          userEmail: "$user.email",
+          courseTitle: "$course.title",
+          courseId: "$course._id",
+          enrolledAt: "$enrolledAt"
+        } 
+      }
+    ]);
+
+    const stats = {
+      totalCourses,
+      totalLectures,
+      totalUsers,
+      totalEnrollments,
+      topCourses: topCourses || [],
+      recentEnrollments: recentEnrollments || [],
+    };
+
+    console.log("📊 Stats calculated:", stats);
+
+    res.json({
+      stats,
+    });
+  } catch (error) {
+    console.error("❌ Error calculating stats:", error);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 export const getAllUser = TryCatch(async (req, res) => {
@@ -117,28 +157,60 @@ export const getAllUser = TryCatch(async (req, res) => {
   res.json({ users });
 });
 
+// ✅ UPDATED: Update Role with Notifications
 export const updateRole = TryCatch(async (req, res) => {
   if (req.user.mainrole !== "superadmin")
     return res.status(403).json({
       message: "This endpoint is assign to superadmin",
     });
+  
   const user = await User.findById(req.params.id);
 
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  let newRole = "";
   if (user.role === "user") {
     user.role = "admin";
+    newRole = "admin";
     await user.save();
-
-    return res.status(200).json({
-      message: "Role updated to admin",
-    });
-  }
-
-  if (user.role === "admin") {
+  } else if (user.role === "admin") {
     user.role = "user";
+    newRole = "user";
     await user.save();
-
-    return res.status(200).json({
-      message: "Role updated",
+  } else {
+    return res.status(400).json({
+      message: "Invalid role",
     });
   }
+
+  // ✅ To USER: Role Updated (Only User)
+  await Notification.create({
+    user: user._id,
+    title: "🔄 Role Updated",
+    message: `Your role has been updated to "${newRole}"`,
+    type: "info",
+    link: "/account",
+  });
+
+  // ✅ To All SUPERADMINS: Role Updated
+  const superadmins = await User.find({ role: "superadmin" });
+  for (const superadmin of superadmins) {
+    await Notification.create({
+      user: superadmin._id,
+      title: "🔄 Role Updated",
+      message: `${user.name} role updated to "${newRole}"`,
+      type: "info",
+      link: "/admin/users",
+    });
+  }
+
+  // ❌ ADMINS DO NOT GET Role Updated notifications
+
+  return res.status(200).json({
+    message: `Role updated to ${newRole}`,
+  });
 });

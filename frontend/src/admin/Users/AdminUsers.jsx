@@ -41,18 +41,60 @@ const AdminUsers = ({ user }) => {
   const updateRole = async (id) => {
     if (window.confirm("Are you sure you want to update this user's role?")) {
       try {
+        const token = localStorage.getItem("token");
         const { data } = await axios.put(
           `${server}/api/user/${id}`,
           {},
           {
             headers: {
-              token: localStorage.getItem("token"),
+              token: token,
             },
           }
         );
 
         toast.success(data.message);
         fetchUsers();
+
+        // ✅ ADD NOTIFICATION - Role Update
+        try {
+          const updatedUser = users.find(u => u._id === id);
+          if (updatedUser) {
+            const newRole = updatedUser.role === "admin" ? "user" : "admin";
+            
+            // Send notification to the user whose role was updated
+            await axios.post(
+              `${server}/api/notifications/create`,
+              {
+                title: "🔄 Role Updated",
+                message: `Your role has been updated to "${newRole}"`,
+                type: "info",
+                link: "/account",
+              },
+              {
+                headers: { token },
+              }
+            );
+            
+            // Send notification to superadmin
+            await axios.post(
+              `${server}/api/notifications/create`,
+              {
+                title: "🔄 Role Updated",
+                message: `User "${updatedUser.name}" role updated to "${newRole}"`,
+                type: "info",
+                link: "/admin/users",
+              },
+              {
+                headers: { token },
+              }
+            );
+            
+            console.log("✅ Role update notifications sent");
+          }
+        } catch (notifError) {
+          console.log("❌ Notification error:", notifError);
+        }
+
       } catch (error) {
         toast.error(error.response?.data?.message || "Failed to update role");
       }

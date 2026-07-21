@@ -686,7 +686,62 @@
     color: #aaa;
   }
 }
+/* ===== Add these styles ===== */
 
+/* Unread badge in header */
+.notification-header .unread-badge {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 50px;
+}
+
+/* Unread dot on notification item */
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 8px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Read notification - slightly faded */
+.notification-item.read {
+  opacity: 0.7;
+}
+
+.notification-item.read:hover {
+  opacity: 1;
+}
+
+/* Time ago text */
+.notification-time {
+  font-size: 11px;
+  color: #aaa;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Empty state icon */
+.empty-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-notifications p {
+  font-size: 15px;
+  color: #888;
+}
 /* ============================================
    ANIMATIONS
    ============================================ */
