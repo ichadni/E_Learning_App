@@ -7,23 +7,71 @@ import { Payment } from "../models/Payment.js";
 import { Progress } from "../models/Progress.js";
 import { Notification } from "../models/Notification.js";
 import { Enrollment } from "../models/Enrollment.js";
-import { promisify } from "util";
-import fs from "fs";
-import { rm } from "fs";
+
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
+
+
+// =====================================================
+// CLOUDINARY UPLOAD HELPER
+// =====================================================
+
+const uploadToCloudinary = (file, folder, resourceType) => {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.buffer) {
+      return reject(new Error("No file received"));
+    }
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: resourceType,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    streamifier
+      .createReadStream(file.buffer)
+      .pipe(uploadStream);
+  });
+};
+
+
+// =====================================================
+// GET ALL COURSES
+// =====================================================
 
 export const getAllCourses = TryCatch(async (req, res) => {
   const courses = await Courses.find();
+
   res.json({
     courses,
   });
 });
 
+
+// =====================================================
+// GET SINGLE COURSE
+// =====================================================
+
 export const getSingleCourse = TryCatch(async (req, res) => {
   const course = await Courses.findById(req.params.id);
+
   res.json({
     course,
   });
 });
+
+
+// =====================================================
+// FETCH LECTURES
+// =====================================================
 
 export const fetchLectures = TryCatch(async (req, res) => {
   const lectures = await Lecture.find({ course: req.params.id });
@@ -43,6 +91,11 @@ export const fetchLectures = TryCatch(async (req, res) => {
   res.json({ lectures });
 });
 
+
+// =====================================================
+// FETCH SINGLE LECTURE
+// =====================================================
+
 export const fetchLecture = TryCatch(async (req, res) => {
   const lecture = await Lecture.findById(req.params.id);
 
@@ -61,12 +114,25 @@ export const fetchLecture = TryCatch(async (req, res) => {
   res.json({ lecture });
 });
 
+
+// =====================================================
+// GET MY COURSES
+// =====================================================
+
 export const getMyCourses = TryCatch(async (req, res) => {
-  const courses = await Courses.find({ _id: req.user.subscription });
+  const courses = await Courses.find({
+    _id: req.user.subscription,
+  });
+
   res.json({
     courses,
   });
 });
+
+
+// =====================================================
+// CHECKOUT
+// =====================================================
 
 export const checkout = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
@@ -91,17 +157,31 @@ export const checkout = TryCatch(async (req, res) => {
   });
 });
 
-export const paymentVerification = TryCatch(async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
+// =====================================================
+// PAYMENT VERIFICATION
+// =====================================================
+
+export const paymentVerification = TryCatch(async (req, res) => {
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+  } = req.body;
+
+  const body =
+    razorpay_order_id + "|" + razorpay_payment_id;
 
   const expectedSignature = crypto
-    .createHmac("sha256", process.env.Razorpay_Secret)
+    .createHmac(
+      "sha256",
+      process.env.Razorpay_Secret
+    )
     .update(body)
     .digest("hex");
 
-  const isAuthentic = expectedSignature === razorpay_signature;
+  const isAuthentic =
+    expectedSignature === razorpay_signature;
 
   if (isAuthentic) {
     await Payment.create({
@@ -133,7 +213,11 @@ export const paymentVerification = TryCatch(async (req, res) => {
   }
 });
 
-// ✅ ADD PROGRESS WITH NOTIFICATIONS
+
+// =====================================================
+// ADD PROGRESS WITH NOTIFICATIONS
+// =====================================================
+
 export const addProgress = TryCatch(async (req, res) => {
   const progress = await Progress.findOne({
     user: req.user._id,
@@ -149,10 +233,12 @@ export const addProgress = TryCatch(async (req, res) => {
   }
 
   progress.completedLectures.push(lectureId);
+
   await progress.save();
 
-  // ✅ Lecture Completed Notification
+  // Lecture Completed Notification
   const lecture = await Lecture.findById(lectureId);
+
   if (lecture) {
     await Notification.create({
       user: req.user._id,
@@ -163,13 +249,22 @@ export const addProgress = TryCatch(async (req, res) => {
     });
   }
 
-  // ✅ Check if Course Completed
-  const allLectures = await Lecture.find({ course: req.query.course });
-  const completedCount = progress.completedLectures.length;
+  // Check if Course Completed
+  const allLectures = await Lecture.find({
+    course: req.query.course,
+  });
 
-  if (completedCount === allLectures.length && allLectures.length > 0) {
-    const course = await Courses.findById(req.query.course);
-    
+  const completedCount =
+    progress.completedLectures.length;
+
+  if (
+    completedCount === allLectures.length &&
+    allLectures.length > 0
+  ) {
+    const course = await Courses.findById(
+      req.query.course
+    );
+
     // To USER: Course Completed
     await Notification.create({
       user: req.user._id,
@@ -180,7 +275,10 @@ export const addProgress = TryCatch(async (req, res) => {
     });
 
     // To All ADMINS: Course Completed
-    const admins = await User.find({ role: "admin" });
+    const admins = await User.find({
+      role: "admin",
+    });
+
     for (const admin of admins) {
       await Notification.create({
         user: admin._id,
@@ -192,7 +290,10 @@ export const addProgress = TryCatch(async (req, res) => {
     }
 
     // To All SUPERADMINS: Course Completed
-    const superadmins = await User.find({ role: "superadmin" });
+    const superadmins = await User.find({
+      role: "superadmin",
+    });
+
     for (const superadmin of superadmins) {
       await Notification.create({
         user: superadmin._id,
@@ -209,17 +310,34 @@ export const addProgress = TryCatch(async (req, res) => {
   });
 });
 
+
+// =====================================================
+// GET YOUR PROGRESS
+// =====================================================
+
 export const getYourProgress = TryCatch(async (req, res) => {
   const progress = await Progress.find({
     user: req.user._id,
     course: req.query.course,
   });
 
-  if (!progress) return res.status(404).json({ message: "null" });
+  if (!progress) {
+    return res.status(404).json({
+      message: "null",
+    });
+  }
 
-  const allLectures = (await Lecture.find({ course: req.query.course })).length;
-  const completedLectures = progress[0].completedLectures.length;
-  const courseProgressPercentage = (completedLectures * 100) / allLectures;
+  const allLectures = (
+    await Lecture.find({
+      course: req.query.course,
+    })
+  ).length;
+
+  const completedLectures =
+    progress[0].completedLectures.length;
+
+  const courseProgressPercentage =
+    (completedLectures * 100) / allLectures;
 
   res.json({
     courseProgressPercentage,
@@ -229,23 +347,54 @@ export const getYourProgress = TryCatch(async (req, res) => {
   });
 });
 
-// ✅ CREATE COURSE WITH NOTIFICATIONS
+
+// =====================================================
+// CREATE COURSE WITH NOTIFICATIONS
+// =====================================================
+
 export const createCourse = TryCatch(async (req, res) => {
-  const { title, description, category, createdBy, duration, price } = req.body;
+  const {
+    title,
+    description,
+    category,
+    createdBy,
+    duration,
+    price,
+  } = req.body;
+
   const image = req.file;
+
+  // ================================
+  // UPLOAD IMAGE TO CLOUDINARY
+  // ================================
+
+  let imageUrl = "";
+
+  if (image) {
+    const result = await uploadToCloudinary(
+      image,
+      "e-learning/courses",
+      "image"
+    );
+
+    imageUrl = result.secure_url;
+  }
 
   const course = await Courses.create({
     title,
     description,
     category,
     createdBy,
-    image: image?.path,
+    image: imageUrl,
     duration,
     price,
   });
 
-  // ✅ To All USERS: New Course Available
-  const allUsers = await User.find({ role: "user" });
+  // To All USERS: New Course Available
+  const allUsers = await User.find({
+    role: "user",
+  });
+
   for (const user of allUsers) {
     await Notification.create({
       user: user._id,
@@ -256,8 +405,11 @@ export const createCourse = TryCatch(async (req, res) => {
     });
   }
 
-  // ✅ To All ADMINS: Course Added
-  const admins = await User.find({ role: "admin" });
+  // To All ADMINS: Course Added
+  const admins = await User.find({
+    role: "admin",
+  });
+
   for (const admin of admins) {
     await Notification.create({
       user: admin._id,
@@ -268,8 +420,11 @@ export const createCourse = TryCatch(async (req, res) => {
     });
   }
 
-  // ✅ To All SUPERADMINS: Course Added
-  const superadmins = await User.find({ role: "superadmin" });
+  // To All SUPERADMINS: Course Added
+  const superadmins = await User.find({
+    role: "superadmin",
+  });
+
   for (const superadmin of superadmins) {
     await Notification.create({
       user: superadmin._id,
@@ -285,26 +440,55 @@ export const createCourse = TryCatch(async (req, res) => {
   });
 });
 
-// ✅ ADD LECTURES WITH NOTIFICATIONS
+
+// =====================================================
+// ADD LECTURES WITH NOTIFICATIONS
+// =====================================================
+
 export const addLectures = TryCatch(async (req, res) => {
   const course = await Courses.findById(req.params.id);
-  if (!course)
+
+  if (!course) {
     return res.status(404).json({
       message: "No Course with this id",
     });
+  }
 
-  const { title, description } = req.body;
+  const {
+    title,
+    description,
+  } = req.body;
+
   const file = req.file;
+
+  // ================================
+  // UPLOAD VIDEO TO CLOUDINARY
+  // ================================
+
+  let videoUrl = "";
+
+  if (file) {
+    const result = await uploadToCloudinary(
+      file,
+      "e-learning/lectures",
+      "video"
+    );
+
+    videoUrl = result.secure_url;
+  }
 
   const lecture = await Lecture.create({
     title,
     description,
-    video: file?.path,
+    video: videoUrl,
     course: course._id,
   });
 
-  // ✅ To All Enrolled Users: New Lecture Added
-  const enrolledUsers = await User.find({ subscription: course._id });
+  // To All Enrolled Users: New Lecture Added
+  const enrolledUsers = await User.find({
+    subscription: course._id,
+  });
+
   for (const user of enrolledUsers) {
     await Notification.create({
       user: user._id,
@@ -315,8 +499,11 @@ export const addLectures = TryCatch(async (req, res) => {
     });
   }
 
-  // ✅ To All ADMINS: Lecture Added
-  const admins = await User.find({ role: "admin" });
+  // To All ADMINS: Lecture Added
+  const admins = await User.find({
+    role: "admin",
+  });
+
   for (const admin of admins) {
     await Notification.create({
       user: admin._id,
@@ -327,8 +514,11 @@ export const addLectures = TryCatch(async (req, res) => {
     });
   }
 
-  // ✅ To All SUPERADMINS: Lecture Added
-  const superadmins = await User.find({ role: "superadmin" });
+  // To All SUPERADMINS: Lecture Added
+  const superadmins = await User.find({
+    role: "superadmin",
+  });
+
   for (const superadmin of superadmins) {
     await Notification.create({
       user: superadmin._id,
@@ -345,70 +535,137 @@ export const addLectures = TryCatch(async (req, res) => {
   });
 });
 
-// ✅ DELETE LECTURE
+
+// =====================================================
+// DELETE LECTURE
+// =====================================================
+
 export const deleteLecture = TryCatch(async (req, res) => {
   const lecture = await Lecture.findById(req.params.id);
 
-  rm(lecture.video, () => {
-    console.log("Video deleted");
-  });
+  if (!lecture) {
+    return res.status(404).json({
+      message: "Lecture not found",
+    });
+  }
+
+  /*
+    OLD:
+    rm(lecture.video)
+
+    That was used for local uploads.
+    Cloudinary files cannot be removed with rm().
+  */
 
   await lecture.deleteOne();
 
-  res.json({ message: "Lecture Deleted" });
+  res.json({
+    message: "Lecture Deleted",
+  });
 });
 
-const unlinkAsync = promisify(fs.unlink);
 
-// ✅ DELETE COURSE
+// =====================================================
+// DELETE COURSE
+// =====================================================
+
 export const deleteCourse = TryCatch(async (req, res) => {
   const course = await Courses.findById(req.params.id);
 
-  const lectures = await Lecture.find({ course: course._id });
-
-  await Promise.all(
-    lectures.map(async (lecture) => {
-      await unlinkAsync(lecture.video);
-      console.log("video deleted");
-    })
-  );
-
-  rm(course.image, () => {
-    console.log("image deleted");
-  });
-
-  await Lecture.find({ course: req.params.id }).deleteMany();
-
-  await course.deleteOne();
-
-  await User.updateMany({}, { $pull: { subscription: req.params.id } });
-
-  res.json({
-    message: "Course Deleted",
-  });
-});
-
-// ✅ UPDATE COURSE
-export const updateCourse = TryCatch(async (req, res) => {
-  const course = await Courses.findById(req.params.id);
-  
   if (!course) {
     return res.status(404).json({
       message: "Course not found",
     });
   }
 
-  const { title, description, category, createdBy, duration, price } = req.body;
+  const lectures = await Lecture.find({
+    course: course._id,
+  });
+
+  /*
+    OLD local-file deletion removed here.
+
+    Cloudinary URLs cannot be deleted using
+    fs.unlink() or rm().
+  */
+
+  await Lecture.find({
+    course: req.params.id,
+  }).deleteMany();
+
+  await course.deleteOne();
+
+  await User.updateMany(
+    {},
+    {
+      $pull: {
+        subscription: req.params.id,
+      },
+    }
+  );
+
+  res.json({
+    message: "Course Deleted",
+  });
+});
+
+
+// =====================================================
+// UPDATE COURSE
+// =====================================================
+
+export const updateCourse = TryCatch(async (req, res) => {
+  const course = await Courses.findById(req.params.id);
+
+  if (!course) {
+    return res.status(404).json({
+      message: "Course not found",
+    });
+  }
+
+  const {
+    title,
+    description,
+    category,
+    createdBy,
+    duration,
+    price,
+  } = req.body;
 
   if (title) course.title = title;
-  if (description) course.description = description;
-  if (category) course.category = category;
-  if (createdBy) course.createdBy = createdBy;
-  if (duration) course.duration = duration;
-  if (price) course.price = price;
+
+  if (description) {
+    course.description = description;
+  }
+
+  if (category) {
+    course.category = category;
+  }
+
+  if (createdBy) {
+    course.createdBy = createdBy;
+  }
+
+  if (duration) {
+    course.duration = duration;
+  }
+
+  if (price) {
+    course.price = price;
+  }
+
+  // ================================
+  // UPDATE IMAGE ON CLOUDINARY
+  // ================================
 
   if (req.file) {
-    course.image = req.file.path;
+    const result = await uploadToCloudinary(
+      req.file,
+      "e-learning/courses",
+      "image"
+    );
+
+    course.image = result.secure_url;
   }
 
   await course.save();
