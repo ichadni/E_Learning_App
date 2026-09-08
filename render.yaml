@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: e-learning-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: DB
+        sync: false
+      - key: Activation_Secret
+        sync: false
+      - key: Jwt_Sec
+        sync: false
+      - key: Forgot_Secret
+        sync: false
+      - key: Razorpay_Secret
+        sync: false
+      - key: Gmail
+        sync: false
+      - key: Password
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

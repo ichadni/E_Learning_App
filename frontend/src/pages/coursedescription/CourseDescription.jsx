@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./coursedescription.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { CourseData } from "../../context/CourseContext";
-import { server } from "../../main";
+import { assetUrl, server } from "../../main";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { UserData } from "../../context/UserContext";
@@ -150,7 +150,7 @@ const CourseDescription = ({ user }) => {
       <div className="course-header">
         {course.image ? (
           <img
-            src={`${server}/${course.image}`}
+            src={assetUrl(course.image)}
             alt={course.title}
             className="course-image"
           />

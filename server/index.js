@@ -1,18 +1,18 @@
 import express from "express";
-import dotenv from "dotenv";
+import "dotenv/config";
 import { connectDb } from "./database/db.js";
 import cors from "cors";
-
-dotenv.config();
 
 
 const app = express();
 
 // using middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, ""),
+}));
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
   res.send("Server is working");
