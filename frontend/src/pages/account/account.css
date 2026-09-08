@@ -1,0 +1,406 @@
+/* ============================================
+   ACCOUNT / PROFILE PAGE - PROFESSIONAL DESIGN
+   ============================================ */
+
+.profile {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(106, 27, 154, 0.06);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.profile:hover {
+  box-shadow: 0 8px 50px rgba(106, 27, 154, 0.1);
+}
+
+/* ===== PROFILE HEADER ===== */
+.profile .profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #f0edf5;
+  text-align: left;
+}
+
+.profile .profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(106, 27, 154, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.profile .profile-avatar:hover {
+  transform: scale(1.05);
+}
+
+.profile .profile-header .profile-title {
+  flex: 1;
+}
+
+.profile .profile-header .profile-title h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.profile .profile-header .profile-title .role-badge {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 6px;
+  text-transform: capitalize;
+}
+
+.profile .profile-header .profile-title .role-badge.user {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.profile .profile-header .profile-title .role-badge.admin {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.profile .profile-header .profile-title .role-badge.superadmin {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+/* ===== PROFILE INFO ===== */
+.profile .profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.profile .profile-info .info-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #f8f6ff;
+  border-radius: 12px;
+  border: 1px solid #f0edf5;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.profile .profile-info .info-item:hover {
+  background: #f0edf5;
+  transform: translateX(4px);
+}
+
+.profile .profile-info .info-item .icon {
+  font-size: 20px;
+  color: #6a1b9a;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.profile .profile-info .info-item .label {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 1px;
+}
+
+.profile .profile-info .info-item .value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.profile .action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.profile .action-buttons .common-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  text-decoration: none;
+}
+
+/* Dashboard Button */
+.profile .action-buttons .common-btn.dashboard {
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  color: white;
+  box-shadow: 0 4px 20px rgba(106, 27, 154, 0.2);
+}
+
+.profile .action-buttons .common-btn.dashboard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(106, 27, 154, 0.35);
+}
+
+/* Admin Dashboard Button */
+.profile .action-buttons .common-btn.admin {
+  background: linear-gradient(135deg, #f57c00, #fb8c00);
+  color: white;
+  box-shadow: 0 4px 20px rgba(245, 124, 0, 0.2);
+}
+
+.profile .action-buttons .common-btn.admin:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(245, 124, 0, 0.35);
+}
+
+/* Logout Button */
+.profile .action-buttons .common-btn.logout {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  box-shadow: 0 4px 20px rgba(231, 76, 60, 0.2);
+}
+
+.profile .action-buttons .common-btn.logout:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(231, 76, 60, 0.35);
+}
+
+.profile .action-buttons .common-btn:active {
+  transform: translateY(0px) scale(0.97);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .profile {
+    margin: 24px 16px;
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .profile .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 14px;
+  }
+
+  .profile .profile-header .profile-title {
+    text-align: center;
+  }
+
+  .profile .profile-header .profile-title h2 {
+    font-size: 22px;
+  }
+
+  .profile .profile-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+
+  .profile .profile-info .info-item {
+    padding: 12px 14px;
+  }
+
+  .profile .profile-info .info-item .icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .profile .profile-info .info-item .value {
+    font-size: 14px;
+  }
+
+  .profile .action-buttons .common-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile {
+    margin: 16px 12px;
+    padding: 20px 14px;
+    border-radius: 16px;
+  }
+
+  .profile .profile-header .profile-title h2 {
+    font-size: 20px;
+  }
+
+  .profile .profile-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .profile .profile-info .info-item {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  .profile .profile-info .info-item .icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .profile .profile-info .info-item .value {
+    font-size: 13px;
+  }
+
+  .profile .action-buttons .common-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .profile .profile-header .profile-title .role-badge {
+    font-size: 11px;
+    padding: 3px 12px;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .profile {
+    background: rgba(30, 30, 50, 0.95);
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile:hover {
+    box-shadow: 0 8px 50px rgba(0, 0, 0, 0.4);
+  }
+
+  .profile .profile-header {
+    border-bottom-color: #3a3a5a;
+  }
+
+  .profile .profile-header .profile-title h2 {
+    color: #eee;
+  }
+
+  .profile .profile-header .profile-title .role-badge.user {
+    background: rgba(25, 118, 210, 0.2);
+    color: #64b5f6;
+  }
+
+  .profile .profile-header .profile-title .role-badge.admin {
+    background: rgba(245, 124, 0, 0.2);
+    color: #ffb74d;
+  }
+
+  .profile .profile-header .profile-title .role-badge.superadmin {
+    background: rgba(198, 40, 40, 0.2);
+    color: #ef9a9a;
+  }
+
+  .profile .profile-info .info-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: #3a3a5a;
+  }
+
+  .profile .profile-info .info-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .profile .profile-info .info-item .icon {
+    background: rgba(255, 255, 255, 0.05);
+    color: #a87bc9;
+  }
+
+  .profile .profile-info .info-item .label {
+    color: #888;
+  }
+
+  .profile .profile-info .info-item .value {
+    color: #eee;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile {
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.profile .profile-info .info-item {
+  animation: slideIn 0.4s ease forwards;
+}
+
+.profile .profile-info .info-item:nth-child(1) { animation-delay: 0.05s; }
+.profile .profile-info .info-item:nth-child(2) { animation-delay: 0.1s; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.profile .action-buttons .common-btn.dashboard {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.profile .action-buttons .common-btn.dashboard:hover {
+  animation: none;
+}

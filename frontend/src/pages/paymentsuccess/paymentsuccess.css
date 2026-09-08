@@ -1,0 +1,316 @@
+/* ============================================
+   PAYMENT SUCCESS PAGE - PROFESSIONAL DESIGN
+   ============================================ */
+
+.payment-success-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0edf5 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Background */
+.payment-success-page::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(39, 174, 96, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatSuccess 8s ease-in-out infinite;
+}
+
+.payment-success-page::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(106, 27, 154, 0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatSuccess 10s ease-in-out infinite reverse;
+}
+
+@keyframes floatSuccess {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.1); }
+}
+
+/* ===== SUCCESS MESSAGE ===== */
+.success-message {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 50px 60px;
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(39, 174, 96, 0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* ===== SUCCESS ICON ===== */
+.success-message .success-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 40px;
+  color: white;
+  box-shadow: 0 8px 30px rgba(39, 174, 96, 0.3);
+  animation: pulseIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== TITLE ===== */
+.success-message h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.success-message h2 span {
+  color: #27ae60;
+}
+
+/* ===== SUBTITLE ===== */
+.success-message .subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+/* ===== REFERENCE NUMBER ===== */
+.success-message .reference {
+  font-size: 14px;
+  color: #888;
+  background: #f8f6ff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 12px 0 20px;
+  border: 1px solid #f0edf5;
+}
+
+.success-message .reference strong {
+  color: #6a1b9a;
+}
+
+/* ===== BUTTON ===== */
+.success-message .common-btn {
+  display: inline-block;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(106, 27, 154, 0.25);
+}
+
+.success-message .common-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(106, 27, 154, 0.35);
+}
+
+.success-message .common-btn:active {
+  transform: translateY(0px) scale(0.97);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .payment-success-page {
+    min-height: 70vh;
+    padding: 30px 16px;
+  }
+
+  .success-message {
+    padding: 36px 28px;
+  }
+
+  .success-message .success-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .success-message h2 {
+    font-size: 26px;
+  }
+
+  .success-message .subtitle {
+    font-size: 14px;
+  }
+
+  .success-message .reference {
+    font-size: 13px;
+  }
+
+  .success-message .common-btn {
+    padding: 12px 32px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-success-page {
+    min-height: 60vh;
+    padding: 20px 12px;
+  }
+
+  .success-message {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .success-message .success-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+
+  .success-message h2 {
+    font-size: 22px;
+  }
+
+  .success-message .subtitle {
+    font-size: 13px;
+  }
+
+  .success-message .reference {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .success-message .common-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+    width: 100%;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .payment-success-page {
+    background: linear-gradient(135deg, #12121e, #1a1a2e);
+  }
+
+  .payment-success-page::before {
+    background: radial-gradient(circle, rgba(39, 174, 96, 0.08) 0%, transparent 70%);
+  }
+
+  .payment-success-page::after {
+    background: radial-gradient(circle, rgba(106, 27, 154, 0.06) 0%, transparent 70%);
+  }
+
+  .success-message {
+    background: rgba(30, 30, 50, 0.95);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(39, 174, 96, 0.1);
+  }
+
+  .success-message h2 {
+    color: #eee;
+  }
+
+  .success-message .subtitle {
+    color: #aaa;
+  }
+
+  .success-message .reference {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: #3a3a5a;
+    color: #888;
+  }
+
+  .success-message .reference strong {
+    color: #a87bc9;
+  }
+}
+.payment-pending-message {
+  text-align: center;
+  padding: 40px 20px;
+  background: #fffbeb;
+  border-radius: 16px;
+  border: 2px solid #fcd34d;
+}
+
+.payment-pending-message .pending-icon {
+  font-size: 56px;
+  color: #f59e0b;
+  margin-bottom: 12px;
+  animation: pulseIcon 2s ease-in-out infinite;
+}
+
+.payment-pending-message h4 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.payment-pending-message p {
+  font-size: 16px;
+  color: #555;
+}
+
+.payment-pending-message .pending-note {
+  color: #888;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    stroke-dashoffset: 50;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}

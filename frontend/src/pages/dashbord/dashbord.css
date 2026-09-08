@@ -1,0 +1,307 @@
+/* ============================================
+   STUDENT DASHBOARD - PROFESSIONAL DESIGN
+   ============================================ */
+
+.student-dashboard {
+  padding: 40px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 70vh;
+  background: #f8f9fa;
+  border-radius: 0 0 40px 40px;
+}
+
+/* ===== HEADER ===== */
+.student-dashboard .dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.student-dashboard h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a2e;
+  position: relative;
+  display: inline-block;
+  margin: 0;
+}
+
+.student-dashboard h2::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 50px;
+  height: 4px;
+  background: linear-gradient(90deg, #6a1b9a, #8a4baf);
+  border-radius: 2px;
+}
+
+.student-dashboard .course-count {
+  font-size: 14px;
+  color: #888;
+  background: #ffffff;
+  padding: 6px 18px;
+  border-radius: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-dashboard .course-count .number {
+  font-weight: 700;
+  color: #6a1b9a;
+  font-size: 18px;
+}
+
+/* ===== SUBTITLE ===== */
+.student-dashboard .subtitle {
+  font-size: 16px;
+  color: #888;
+  margin-top: 8px;
+  margin-bottom: 30px;
+}
+
+/* ===== COURSE GRID ===== */
+.student-dashboard .dashboard-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+  margin-top: 10px;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.student-dashboard .empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 2px dashed #d4c4e0;
+}
+
+.student-dashboard .empty-state .icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.student-dashboard .empty-state h3 {
+  font-size: 24px;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.student-dashboard .empty-state p {
+  font-size: 16px;
+  color: #888;
+  margin-bottom: 24px;
+}
+
+.student-dashboard .empty-state .browse-btn {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.student-dashboard .empty-state .browse-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(106, 27, 154, 0.35);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 992px) {
+  .student-dashboard {
+    padding: 30px 20px;
+  }
+
+  .student-dashboard h2 {
+    font-size: 28px;
+  }
+
+  .student-dashboard .dashboard-content {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .student-dashboard {
+    padding: 24px 16px;
+  }
+
+  .student-dashboard .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .student-dashboard h2 {
+    font-size: 24px;
+  }
+
+  .student-dashboard .subtitle {
+    font-size: 14px;
+  }
+
+  .student-dashboard .dashboard-content {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .student-dashboard .empty-state {
+    padding: 50px 16px;
+  }
+
+  .student-dashboard .empty-state .icon {
+    font-size: 48px;
+  }
+
+  .student-dashboard .empty-state h3 {
+    font-size: 20px;
+  }
+
+  .student-dashboard .empty-state p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-dashboard {
+    padding: 16px 12px;
+  }
+
+  .student-dashboard h2 {
+    font-size: 20px;
+  }
+
+  .student-dashboard .course-count {
+    font-size: 12px;
+    padding: 4px 14px;
+  }
+
+  .student-dashboard .course-count .number {
+    font-size: 15px;
+  }
+
+  .student-dashboard .dashboard-content {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .student-dashboard .empty-state {
+    padding: 40px 16px;
+  }
+
+  .student-dashboard .empty-state .icon {
+    font-size: 40px;
+  }
+
+  .student-dashboard .empty-state h3 {
+    font-size: 18px;
+  }
+
+  .student-dashboard .empty-state p {
+    font-size: 13px;
+  }
+
+  .student-dashboard .empty-state .browse-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .student-dashboard {
+    background: #12121e;
+  }
+
+  .student-dashboard h2 {
+    color: #eee;
+  }
+
+  .student-dashboard .subtitle {
+    color: #888;
+  }
+
+  .student-dashboard .course-count {
+    background: rgba(30, 30, 50, 0.95);
+    color: #aaa;
+  }
+
+  .student-dashboard .course-count .number {
+    color: #a87bc9;
+  }
+
+  .student-dashboard .empty-state {
+    background: rgba(30, 30, 50, 0.95);
+    border-color: #3a3a5a;
+  }
+
+  .student-dashboard .empty-state h3 {
+    color: #eee;
+  }
+
+  .student-dashboard .empty-state p {
+    color: #888;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.student-dashboard .dashboard-content .course-card {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.student-dashboard .dashboard-content .course-card:nth-child(1) { animation-delay: 0.05s; }
+.student-dashboard .dashboard-content .course-card:nth-child(2) { animation-delay: 0.1s; }
+.student-dashboard .dashboard-content .course-card:nth-child(3) { animation-delay: 0.15s; }
+.student-dashboard .dashboard-content .course-card:nth-child(4) { animation-delay: 0.2s; }
+.student-dashboard .dashboard-content .course-card:nth-child(5) { animation-delay: 0.25s; }
+.student-dashboard .dashboard-content .course-card:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.student-dashboard .empty-state .browse-btn {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.student-dashboard .empty-state .browse-btn:hover {
+  animation: none;
+}

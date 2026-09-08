@@ -1,0 +1,135 @@
+/* ============================================
+   PAYMENT PENDING PAGE
+   ============================================ */
+
+.payment-pending-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0edf5 100%);
+}
+
+.pending-message {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  padding: 50px 60px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  animation: fadeInUp 0.6s ease;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.pending-icon {
+  font-size: 64px;
+  color: #f59e0b;
+  margin-bottom: 16px;
+  animation: pulseIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.pending-message h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.pending-message p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.pending-message .reference {
+  font-size: 14px;
+  color: #888;
+  background: #fffbeb;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 12px 0 16px;
+  border: 1px solid #fcd34d;
+  font-family: monospace;
+}
+
+.pending-message .note {
+  font-size: 14px;
+  color: #888;
+  margin: 16px 0 24px;
+  line-height: 1.6;
+}
+
+.pending-message .common-btn {
+  display: inline-block;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(106, 27, 154, 0.25);
+}
+
+.pending-message .common-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(106, 27, 154, 0.35);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pending-message {
+    padding: 36px 28px;
+  }
+
+  .pending-message h2 {
+    font-size: 26px;
+  }
+
+  .pending-icon {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pending-message {
+    padding: 28px 20px;
+  }
+
+  .pending-message h2 {
+    font-size: 22px;
+  }
+
+  .pending-message p {
+    font-size: 14px;
+  }
+
+  .pending-message .common-btn {
+    padding: 12px 32px;
+    font-size: 14px;
+    width: 100%;
+  }
+}

@@ -1,0 +1,473 @@
+/* ============================================
+   EDIT COURSE PAGE - PROFESSIONAL DESIGN
+   ============================================ */
+
+.edit-course {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(106, 27, 154, 0.06);
+  transition: all 0.3s ease;
+}
+
+.edit-course:hover {
+  box-shadow: 0 8px 50px rgba(106, 27, 154, 0.1);
+}
+
+/* ===== HEADER ===== */
+.edit-course h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0edf5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edit-course h2::before {
+  content: '✏️';
+  font-size: 28px;
+}
+
+.edit-course .course-id {
+  font-size: 14px;
+  color: #888;
+  font-weight: 400;
+  margin-left: auto;
+}
+
+/* ===== FORM ===== */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edit-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-top: 16px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-form label:first-of-type {
+  margin-top: 0;
+}
+
+.edit-form label .required {
+  color: #e74c3c;
+  font-size: 16px;
+}
+
+.edit-form input,
+.edit-form textarea,
+.edit-form select {
+  padding: 12px 16px;
+  border: 2px solid #e8e0f0;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background: #faf8ff;
+  color: #1a1a2e;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus,
+.edit-form select:focus {
+  outline: none;
+  border-color: #6a1b9a;
+  box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.08);
+  background: #ffffff;
+}
+
+.edit-form input:hover,
+.edit-form textarea:hover,
+.edit-form select:hover {
+  border-color: #b39ddb;
+}
+
+.edit-form textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* ===== SELECT DROPDOWN ===== */
+.edit-form select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* ===== FILE INPUT ===== */
+.edit-form .file-upload-wrapper {
+  position: relative;
+  margin-top: 4px;
+}
+
+.edit-form input[type="file"] {
+  padding: 16px;
+  background: #f8f6ff;
+  border: 2px dashed #d4c4e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-form input[type="file"]:hover {
+  border-color: #6a1b9a;
+  background: #f5f0ff;
+}
+
+.edit-form input[type="file"]::file-selector-button {
+  padding: 8px 20px;
+  background: #6a1b9a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-right: 16px;
+}
+
+.edit-form input[type="file"]::file-selector-button:hover {
+  background: #8a4baf;
+  transform: translateY(-2px);
+}
+
+/* ===== IMAGE PREVIEW ===== */
+.edit-form .image-preview {
+  margin: 12px 0 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e8e0f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  max-width: 300px;
+}
+
+.edit-form .image-preview img {
+  width: 100%;
+  height: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== CURRENT IMAGE LABEL ===== */
+.edit-form .current-image-label {
+  font-size: 13px;
+  color: #888;
+  margin: 4px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-form .current-image-label .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #27ae60;
+  display: inline-block;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.edit-form .common-btn {
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #6a1b9a, #8a4baf);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 24px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.edit-form .common-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(106, 27, 154, 0.35);
+}
+
+.edit-form .common-btn:active:not(:disabled) {
+  transform: translateY(0px) scale(0.97);
+}
+
+.edit-form .common-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.edit-form .common-btn .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .edit-course {
+    margin: 20px 16px;
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .edit-course h2 {
+    font-size: 24px;
+    flex-wrap: wrap;
+  }
+
+  .edit-course .course-id {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .edit-form input,
+  .edit-form textarea,
+  .edit-form select {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .edit-form textarea {
+    min-height: 100px;
+  }
+
+  .edit-form .common-btn {
+    padding: 14px 24px;
+    font-size: 16px;
+  }
+
+  .edit-form .image-preview {
+    max-width: 200px;
+  }
+
+  .edit-form input[type="file"]::file-selector-button {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-course {
+    margin: 12px 12px;
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .edit-course h2 {
+    font-size: 20px;
+  }
+
+  .edit-course h2::before {
+    font-size: 20px;
+  }
+
+  .edit-form label {
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .edit-form input,
+  .edit-form textarea,
+  .edit-form select {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .edit-form textarea {
+    min-height: 80px;
+  }
+
+  .edit-form .common-btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  .edit-form .image-preview {
+    max-width: 150px;
+  }
+
+  .edit-form input[type="file"] {
+    padding: 12px;
+  }
+
+  .edit-form input[type="file"]::file-selector-button {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  .edit-course {
+    background: rgba(30, 30, 50, 0.95);
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .edit-course:hover {
+    box-shadow: 0 8px 50px rgba(0, 0, 0, 0.4);
+  }
+
+  .edit-course h2 {
+    color: #eee;
+    border-bottom-color: #3a3a5a;
+  }
+
+  .edit-course .course-id {
+    color: #888;
+  }
+
+  .edit-form label {
+    color: #ccc;
+  }
+
+  .edit-form input,
+  .edit-form textarea,
+  .edit-form select {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #3a3a5a;
+    color: #eee;
+  }
+
+  .edit-form input:focus,
+  .edit-form textarea:focus,
+  .edit-form select:focus {
+    border-color: #8a4baf;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.15);
+  }
+
+  .edit-form input:hover,
+  .edit-form textarea:hover,
+  .edit-form select:hover {
+    border-color: #6a1b9a;
+  }
+
+  .edit-form input::placeholder,
+  .edit-form textarea::placeholder {
+    color: #666;
+  }
+
+  .edit-form select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  }
+
+  .edit-form input[type="file"] {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: #3a3a5a;
+  }
+
+  .edit-form input[type="file"]:hover {
+    border-color: #8a4baf;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .edit-form input[type="file"]::file-selector-button {
+    background: #6a1b9a;
+  }
+
+  .edit-form input[type="file"]::file-selector-button:hover {
+    background: #8a4baf;
+  }
+
+  .edit-form .image-preview {
+    border-color: #3a3a5a;
+  }
+
+  .edit-form .current-image-label {
+    color: #888;
+  }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+.edit-course .loading-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.edit-course .loading-state .spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f0edf5;
+  border-top: 4px solid #6a1b9a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.edit-course .loading-state p {
+  color: #888;
+  font-size: 16px;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.edit-course {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.edit-form .common-btn {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.edit-form .common-btn:hover {
+  animation: none;
+}
