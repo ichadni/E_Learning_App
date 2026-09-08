@@ -7,18 +7,36 @@ import fs from "fs";
 import { User } from "../models/User.js";
 import { Enrollment } from "../models/Enrollment.js";
 import { Notification } from "../models/Notification.js"; // ✅ ADDED
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
+
+const uploadToCloudinary = (file, folder, resourceType) => {
+  return new Promise((resolve, reject) => {
+    if (!file?.buffer) {
+      return reject(new Error("No file received"));
+    }
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: resourceType },
+      (error, result) => (error ? reject(error) : resolve(result))
+    );
+
+    streamifier.createReadStream(file.buffer).pipe(uploadStream);
+  });
+};
 
 export const createCourse = TryCatch(async (req, res) => {
   const { title, description, category, createdBy, duration, price } = req.body;
 
   const image = req.file;
+  const result = await uploadToCloudinary(image, "e-learning/courses", "image");
 
   await Courses.create({
     title,
     description,
     category,
     createdBy,
-    image: image?.path,
+    image: result.secure_url,
     duration,
     price,
   });
@@ -39,11 +57,12 @@ export const addLectures = TryCatch(async (req, res) => {
   const { title, description } = req.body;
 
   const file = req.file;
+  const result = await uploadToCloudinary(file, "e-learning/lectures", "video");
 
   const lecture = await Lecture.create({
     title,
     description,
-    video: file?.path,
+    video: result.secure_url,
     course: course._id,
   });
 
@@ -55,10 +74,6 @@ export const addLectures = TryCatch(async (req, res) => {
 
 export const deleteLecture = TryCatch(async (req, res) => {
   const lecture = await Lecture.findById(req.params.id);
-
-  rm(lecture.video, () => {
-    console.log("Video deleted");
-  });
 
   await lecture.deleteOne();
 
@@ -74,14 +89,15 @@ export const deleteCourse = TryCatch(async (req, res) => {
 
   await Promise.all(
     lectures.map(async (lecture) => {
-      await unlinkAsync(lecture.video);
-      console.log("video deleted");
+      if (!lecture.video?.startsWith("http")) {
+        await unlinkAsync(lecture.video);
+      }
     })
   );
 
-  rm(course.image, () => {
-    console.log("image deleted");
-  });
+  if (!course.image?.startsWith("http")) {
+    rm(course.image, () => {});
+  }
 
   await Lecture.find({ course: req.params.id }).deleteMany();
 
