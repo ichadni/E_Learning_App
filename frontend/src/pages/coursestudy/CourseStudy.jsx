@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./coursestudy.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CourseData } from "../../context/CourseContext";
-import { server } from "../../main";
+import { assetUrl, server } from "../../main";
 import { FaUser, FaClock, FaBookOpen, FaArrowRight } from "react-icons/fa";
 
 const CourseStudy = ({ user }) => {
@@ -41,7 +41,7 @@ const CourseStudy = ({ user }) => {
       {/* Course Image */}
       {course.image ? (
         <img
-          src={`${server}/${course.image}`}
+          src={assetUrl(course.image)}
           alt={course.title}
           className="course-image"
         />

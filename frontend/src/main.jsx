@@ -6,6 +6,10 @@ import { CourseContextProvider } from "./context/CourseContext.jsx";
 import { NotificationProvider } from "./context/NotificationContext.jsx";
 
 export const server = import.meta.env.VITE_API_URL;
+export const assetUrl = (path) => {
+  if (!path) return "";
+  return /^https?:\/\//i.test(path) ? path : `${server}/${path}`;
+};
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

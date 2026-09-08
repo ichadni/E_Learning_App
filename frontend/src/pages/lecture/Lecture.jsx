@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./lecture.css";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { server } from "../../main";
+import { assetUrl, server } from "../../main";
 import Loading from "../../components/loading/Loading";
 import toast from "react-hot-toast";
 import { TiTick } from "react-icons/ti";
@@ -268,7 +268,7 @@ const Lecture = ({ user }) => {
                   {lecture.video ? (
                     <>
                       <video
-                        src={`${server}/${lecture.video}`}
+                        src={assetUrl(lecture.video)}
                         width={"100%"}
                         controls
                         controlsList="nodownload noremoteplayback"

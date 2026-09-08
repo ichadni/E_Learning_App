@@ -1,6 +1,6 @@
 import React from "react";
 import "./courseCard.css";
-import { server } from "../../main";
+import { assetUrl } from "../../main";
 import { UserData } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -19,7 +19,7 @@ const CourseCard = ({ course }) => {
     <div className="course-card">
       {/* Image */}
       <img 
-        src={course.image ? `${server}/${course.image}` : "https://via.placeholder.com/300x200/6a1b9a/ffffff?text=Course"} 
+        src={course.image ? assetUrl(course.image) : "https://via.placeholder.com/300x200/6a1b9a/ffffff?text=Course"}
         alt={course.title} 
         className="course-image" 
       />
