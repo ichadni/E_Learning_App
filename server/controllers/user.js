@@ -1,8 +1,44 @@
 import { User } from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import sendMail, { sendForgotMail } from "../middlewares/sendMail.js";
 import TryCatch from "../middlewares/TryCatch.js";
+
+const activationKey = () => crypto.createHash("sha256")
+  .update(process.env.Activation_Secret)
+  .digest();
+
+const encryptActivationData = (data) => {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", activationKey(), iv);
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(data), "utf8"),
+    cipher.final(),
+  ]);
+
+  return [
+    iv.toString("base64url"),
+    cipher.getAuthTag().toString("base64url"),
+    encrypted.toString("base64url"),
+  ].join(".");
+};
+
+const decryptActivationData = (token) => {
+  const [ivValue, tagValue, encryptedValue] = token.split(".");
+  const decipher = crypto.createDecipheriv(
+    "aes-256-gcm",
+    activationKey(),
+    Buffer.from(ivValue, "base64url")
+  );
+  decipher.setAuthTag(Buffer.from(tagValue, "base64url"));
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(encryptedValue, "base64url")),
+    decipher.final(),
+  ]);
+
+  return JSON.parse(decrypted.toString("utf8"));
+};
 
 export const register = TryCatch(async (req, res) => {
   const { email, name, password } = req.body;
@@ -26,16 +62,7 @@ export const register = TryCatch(async (req, res) => {
 
   const otp = Math.floor(Math.random() * 1000000);
 
-  const activationToken = jwt.sign(
-    {
-      user,
-      otp,
-    },
-    process.env.Activation_Secret,
-    {
-      expiresIn: "5m",
-    }
-  );
+  const activationToken = encryptActivationData({ user, otp, expiresAt: Date.now() + 5 * 60 * 1000 });
 
   const data = {
     name,
@@ -53,9 +80,14 @@ export const register = TryCatch(async (req, res) => {
 export const verifyUser = TryCatch(async (req, res) => {
   const { otp, activationToken } = req.body;
 
-  const verify = jwt.verify(activationToken, process.env.Activation_Secret);
+  let verify;
+  try {
+    verify = decryptActivationData(activationToken);
+  } catch {
+    return res.status(400).json({ message: "Otp Expired" });
+  }
 
-  if (!verify)
+  if (!verify || verify.expiresAt < Date.now())
     return res.status(400).json({
       message: "Otp Expired",
     });
@@ -99,15 +131,18 @@ export const loginUser = TryCatch(async (req, res) => {
     expiresIn: "15d",
   });
 
+  const safeUser = user.toObject();
+  delete safeUser.password;
+
   res.json({
     message: `Welcome back ${user.name}`,
     token,
-    user,
+    user: safeUser,
   });
 });
 
 export const myProfile = TryCatch(async (req, res) => {
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).select("-password");
 
   res.json({ user });
 });
@@ -138,7 +173,12 @@ export const forgotPassword = TryCatch(async (req, res) => {
 });
 
 export const resetPassword = TryCatch(async (req, res) => {
-  const decodedData = jwt.verify(req.query.token, process.env.Forgot_Secret);
+  let decodedData;
+  try {
+    decodedData = jwt.verify(req.query.token, process.env.Forgot_Secret);
+  } catch {
+    return res.status(400).json({ message: "Token Expired" });
+  }
 
   const user = await User.findOne({ email: decodedData.email });
 
