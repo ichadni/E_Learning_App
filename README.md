@@ -311,39 +311,45 @@ screenshots/
 ## 06. Lessons
 
 <p align="center">
-  <img src="./screenshots/06-lessons.png" width="92%" alt="Lesson Management">
+  <img src="./screenshots/add-lecture.png" width="92%" alt="Lesson Management">
 </p>
 
 ---
 
-## 07. Course / Content Creation
+## 07. Admin Dashboard
 
 <p align="center">
-  <img src="./screenshots/07-create-course.png" width="92%" alt="Course Creation">
+  <img src="./screenshots/admin-das-learn.png" width="92%" alt="Admin Dashboard">
 </p>
 
 ---
 
-## 08. Verification
+## 08. Payment
 
 <p align="center">
-  <img src="./screenshots/08-verification.png" width="92%" alt="Verification System">
+  <img src="./screenshots/stu-payment-learn.png" width="92%" alt="Student Payment">
+</p>
+
+---
+## 09. Admin Accept Payment
+
+<p align="center">
+  <img src="./screenshots/admin-payment.png" width="92%" alt="Admin Verify Payment">
+</p>
+
+
+## 10. Notifications
+
+<p align="center">
+  <img src="./screenshots/learn-notification.png" width="92%" alt="Notification System">
 </p>
 
 ---
 
-## 09. Notifications
+## 11. Responsive Interface
 
 <p align="center">
-  <img src="./screenshots/09-notifications.png" width="92%" alt="Notification System">
-</p>
-
----
-
-## 10. Responsive Interface
-
-<p align="center">
-  <img src="./screenshots/10-responsive.png" width="92%" alt="Responsive Interface">
+  <img src="./screenshots/superadmin.png" width="92%" alt="Responsive Interface">
 </p>
 
 ---
