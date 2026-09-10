@@ -354,20 +354,6 @@ screenshots/
 
 ---
 
-# 🎥 Project Demonstration
-
-A complete walkthrough of the application is available in the project demonstration video.
-
-<p align="center">
-
-**▶️ [Watch the Full Project Demonstration](YOUR_VIDEO_LINK)**
-
-</p>
-
-The demonstration showcases the application's major workflows, interface, and core functionality.
-
----
-
 # 🚀 Getting Started
 
 Follow the instructions below to run the project locally.
