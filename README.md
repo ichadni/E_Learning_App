@@ -270,7 +270,7 @@ screenshots/
 ## 01. Home Page
 
 <p align="center">
-  <img src="./screenshots/01-home.png" width="92%" alt="E-Learning Platform Home Page">
+  <img src="./screenshots/home-learn.png" width="92%" alt="E-Learning Platform Home Page">
 </p>
 
 ---
@@ -278,15 +278,16 @@ screenshots/
 ## 02. Authentication
 
 <p align="center">
-  <img src="./screenshots/02-login.png" width="92%" alt="Authentication Interface">
+  <img src="./screenshots/login-learn.png" width="92%" alt="Authentication Interface">
 </p>
+
 
 ---
 
 ## 03. Dashboard
 
 <p align="center">
-  <img src="./screenshots/03-dashboard.png" width="92%" alt="E-Learning Dashboard">
+  <img src="./screenshots/learn-user-das.png" width="92%" alt="User Dashboard">
 </p>
 
 ---
@@ -294,7 +295,7 @@ screenshots/
 ## 04. Courses
 
 <p align="center">
-  <img src="./screenshots/04-courses.png" width="92%" alt="Course Management">
+  <img src="./screenshots/add-course.png" width="92%" alt="Course Management">
 </p>
 
 ---
@@ -302,7 +303,7 @@ screenshots/
 ## 05. Course Details
 
 <p align="center">
-  <img src="./screenshots/05-course-details.png" width="92%" alt="Course Details">
+  <img src="./screenshots/tec-course.png" width="92%" alt="Course Details">
 </p>
 
 ---
