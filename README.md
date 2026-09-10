@@ -349,7 +349,7 @@ screenshots/
 ## 11. Responsive Interface
 
 <p align="center">
-  <img src="./screenshots/superadmin.png" width="92%" alt="Responsive Interface">
+  <img src="./screenshots/superadmin-role.png" width="92%" alt="Responsive Interface">
 </p>
 
 ---
