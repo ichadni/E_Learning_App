@@ -5,11 +5,11 @@
 </p>
 
 <p align="center">
-  <a href="YOUR_VERCEL_LINK">🌐 Live Demo</a>
+  <a href="https://e-learning-app-zym9.vercel.app/">🌐 Live Demo</a>
   •
   <a href="https://github.com/ichadni/E_Learning_App">📂 GitHub Repository</a>
   •
-  <a href="YOUR_RENDER_LINK">⚙️ Backend API</a>
+  <a href="https://e-learning-app-idug.onrender.com">⚙️ Backend API</a>
 </p>
 
 <p align="center">
@@ -843,7 +843,7 @@ Interested in building practical, scalable, and user-focused web applications.
 <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
 </a>
 
-<a href="YOUR_LINKEDIN_PROFILE">
+<a href="https://www.linkedin.com/in/israt-chadni-016870287/">
 <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
 </a>
 
